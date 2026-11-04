@@ -1,1 +1,117 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Dinheiro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <aside class="sidebar">
+            <h2>💰 Nosso Dinheiro</h2>
+
+            <nav>
+                <a href="#" class="active">▦ Visão geral</a>
+                <a href="#">▤ Lançamentos</a>
+                <a href="#">▣ Despesas</a>
+                <a href="#">◷ Planejamento</a>
+                <a href="#">▥ Relatórios</a>
+            </nav>
+
+            <div class="couple">
+                <span>G</span>
+                <span>L</span>
+                <p>Gabriela & Larissa</p>
+            </div>
+        </aside>
+
+        <main class="content">
+
+            <header>
+                <div>
+                    <h1>Visão geral</h1>
+                    <p>Acompanhe a vida financeira de vocês.</p>
+                </div>
+
+                <select id="mes">
+                    <option value="Novembro">Novembro</option>
+                    <option value="Janeiro">Janeiro</option>
+                    <option value="Fevereiro">Fevereiro</option>
+                    <option value="Março">Março</option>
+                    <option value="Abril">Abril</option>
+                    <option value="Maio">Maio</option>
+                    <option value="Junho">Junho</option>
+                    <option value="Julho">Julho</option>
+                    <option value="Agosto">Agosto</option>
+                    <option value="Setembro">Setembro</option>
+                    <option value="Outubro">Outubro</option>
+                    <option value="Dezembro">Dezembro</option>
+                </select>
+            </header>
+
+            <section class="cards">
+
+                <div class="card balance">
+                    <p>Saldo disponível</p>
+                    <h2>R$ 3.850,00</h2>
+                    <span>Saldo do casal</span>
+                </div>
+
+                <div class="card income">
+                    <p>Entradas</p>
+                    <h2>R$ 8.500,00</h2>
+                    <span>Salários e rendimentos</span>
+                </div>
+
+                <div class="card expense">
+                    <p>Despesas</p>
+                    <h2>R$ 4.650,00</h2>
+                    <span>Contas e compras</span>
+                </div>
+
+            </section>
+
+            <section class="panel">
+                <h2>Resumo financeiro</h2>
+                <p>Visualize como está o dinheiro do casal.</p>
+
+                <div class="progress">
+                    <div></div>
+                </div>
+
+                <div class="legend">
+                    <span>● Despesas</span>
+                    <span>● Saldo restante</span>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Últimas movimentações</h2>
+
+                <div class="movement">
+                    <span>🏠 Financiamento</span>
+                    <strong>- R$ 950,00</strong>
+                </div>
+
+                <div class="movement">
+                    <span>🛒 Mercado</span>
+                    <strong>- R$ 450,00</strong>
+                </div>
+
+                <div class="movement">
+                    <span>💰 Salário</span>
+                    <strong class="positive">+ R$ 4.500,00</strong>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
