@@ -1,12 +1,13 @@
 
-/* ==========================================
-   DMIKA - SISTEMA FINANCEIRO
-   RECEITAS, DESPESAS, METAS E PLANEJAMENTO
-========================================== */
+// ==========================================
+// DMIKA - SISTEMA DE GESTAO FINANCEIRA
+// Receitas, Despesas, Metas e Planejamento
+// ==========================================
 
-/* ==========================================
-   1. FUNÇÕES GERAIS
-========================================== */
+
+// ==========================================
+// FUNCOES GERAIS
+// ==========================================
 
 function formatarMoeda(valor) {
     return Number(valor || 0).toLocaleString("pt-BR", {
@@ -27,34 +28,40 @@ function salvarDados(chave, dados) {
     localStorage.setItem(chave, JSON.stringify(dados));
 }
 
-function criarBotao(texto, classe, acao) {
+function criarBotao(texto, acao) {
     const botao = document.createElement("button");
-
     botao.type = "button";
     botao.textContent = texto;
-    botao.className = classe || "";
-
     botao.addEventListener("click", acao);
-
     return botao;
 }
 
-function obterValor(id) {
-    const campo = document.getElementById(id);
-    return campo ? campo.value : "";
+function criarElemento(tag, texto) {
+    const elemento = document.createElement(tag);
+    elemento.textContent = texto;
+    return elemento;
 }
 
-/* ==========================================
-   2. RECEITAS
-========================================== */
+
+// ==========================================
+// RECEITAS
+// ==========================================
 
 let receitas = carregarDados("dmika_receitas");
 let receitaEmEdicao = null;
 
 const formReceita = document.getElementById("formReceita");
-const listaReceitas = document.getElementById("listaReceitas");
 
-function atualizarReceitas() {
+function salvarReceitas() {
+    salvarDados("dmika_receitas", receitas);
+}
+
+function mostrarReceitas() {
+    const lista = document.getElementById("listaReceitas");
+    if (!lista) return;
+
+    lista.innerHTML = "";
+
     const total = receitas.reduce(
         (soma, item) => soma + Number(item.valor), 0
     );
@@ -75,49 +82,26 @@ function atualizarReceitas() {
     if (fixasElemento) fixasElemento.textContent = formatarMoeda(fixas);
     if (variaveisElemento) variaveisElemento.textContent = formatarMoeda(variaveis);
 
-    mostrarReceitas();
-}
-
-function mostrarReceitas() {
-    if (!listaReceitas) return;
-
-    listaReceitas.innerHTML = "";
-
     if (receitas.length === 0) {
-        listaReceitas.textContent = "Nenhuma receita cadastrada.";
+        lista.textContent = "Nenhuma receita cadastrada ainda.";
         return;
     }
 
-    receitas.forEach(item => {
-        const linha = document.createElement("div");
-        linha.className = "movement";
+    receitas.forEach(receita => {
+        const item = document.createElement("div");
+        item.className = "meaning";
 
-        const info = document.createElement("div");
+        item.appendChild(criarElemento("h3", receita.descricao));
+        item.appendChild(criarElemento("p", "Valor: " + formatarMoeda(receita.valor)));
+        item.appendChild(criarElemento("p", "Categoria: " + receita.categoria));
+        item.appendChild(criarElemento("p", "Tipo: " + receita.tipo));
+        item.appendChild(criarElemento("p", "Data: " + receita.data));
+        item.appendChild(criarElemento("p", "Responsável: " + receita.responsavel));
 
-        const titulo = document.createElement("strong");
-        titulo.textContent = item.descricao;
+        item.appendChild(criarBotao("Editar", () => editarReceita(receita.id)));
+        item.appendChild(criarBotao("Excluir", () => excluirReceita(receita.id)));
 
-        const detalhe = document.createElement("p");
-        detalhe.textContent =
-            item.categoria + " | " +
-            item.tipo + " | " +
-            (item.responsavel || "Não informado");
-
-        const valor = document.createElement("p");
-        valor.textContent = formatarMoeda(item.valor);
-        valor.className = "positive";
-
-        info.append(titulo, detalhe, valor);
-
-        const botoes = document.createElement("div");
-
-        botoes.append(
-            criarBotao("Editar", "", () => editarReceita(item.id)),
-            criarBotao("Excluir", "", () => excluirReceita(item.id))
-        );
-
-        linha.append(info, botoes);
-        listaReceitas.appendChild(linha);
+        lista.appendChild(item);
     });
 }
 
@@ -125,59 +109,54 @@ if (formReceita) {
     formReceita.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const receita = {
+        const novaReceita = {
             id: receitaEmEdicao || Date.now(),
-            descricao: obterValor("descricao"),
-            valor: Number(obterValor("valor")),
-            categoria: obterValor("categoria"),
-            tipo: obterValor("tipo"),
-            data: obterValor("data"),
-            responsavel: obterValor("responsavel")
+            descricao: document.getElementById("descricao").value.trim(),
+            valor: Number(document.getElementById("valor").value),
+            categoria: document.getElementById("categoria").value,
+            tipo: document.getElementById("tipo").value,
+            data: document.getElementById("data").value,
+            responsavel: document.getElementById("responsavel").value
         };
 
-        if (
-            !receita.descricao ||
-            !receita.valor ||
-            receita.valor <= 0
-        ) {
+        if (!novaReceita.descricao || novaReceita.valor <= 0) {
             alert("Preencha os campos corretamente.");
             return;
         }
 
         if (receitaEmEdicao) {
             receitas = receitas.map(item =>
-                item.id === receitaEmEdicao ? receita : item
+                item.id === receitaEmEdicao ? novaReceita : item
             );
         } else {
-            receitas.push(receita);
+            receitas.push(novaReceita);
         }
 
-        salvarDados("dmika_receitas", receitas);
+        salvarReceitas();
+        mostrarReceitas();
 
-        receitaEmEdicao = null;
         formReceita.reset();
+        receitaEmEdicao = null;
 
         const botao = formReceita.querySelector('button[type="submit"]');
-        if (botao) botao.textContent = "Cadastrar receita";
-
-        atualizarReceitas();
+        if (botao) botao.textContent = "Adicionar receita";
 
         alert("Receita salva com sucesso!");
     });
 }
 
 function editarReceita(id) {
-    const item = receitas.find(receita => receita.id === id);
-    if (!item) return;
+    const receita = receitas.find(item => item.id === id);
+    if (!receita) return;
 
     receitaEmEdicao = id;
 
-    document.getElementById("descricao").value = item.descricao;
-    document.getElementById("valor").value = item.valor;
-    document.getElementById("categoria").value = item.categoria;
-    document.getElementById("tipo").value = item.tipo;
-    document.getElementById("data").value = item.data;
-    document.getElementById("responsavel").value = item.responsavel;
+    document.getElementById("descricao").value = receita.descricao;
+    document.getElementById("valor").value = receita.valor;
+    document.getElementById("categoria").value = receita.categoria;
+    document.getElementById("tipo").value = receita.tipo;
+    document.getElementById("data").value = receita.data;
+    document.getElementById("responsavel").value = receita.responsavel;
 
     const botao = formReceita.querySelector('button[type="submit"]');
     if (botao) botao.textContent = "Salvar alterações";
@@ -186,27 +165,40 @@ function editarReceita(id) {
 }
 
 function excluirReceita(id) {
-    if (!confirm("Deseja excluir esta receita?")) return;
+    if (!confirm("Deseja realmente excluir esta receita?")) return;
 
     receitas = receitas.filter(item => item.id !== id);
+    salvarReceitas();
+    mostrarReceitas();
 
-    salvarDados("dmika_receitas", receitas);
-    atualizarReceitas();
+    if (receitaEmEdicao === id) {
+        receitaEmEdicao = null;
+        formReceita.reset();
+    }
 }
 
-atualizarReceitas();
+mostrarReceitas();
 
-/* ==========================================
-   3. DESPESAS
-========================================== */
+
+// ==========================================
+// DESPESAS
+// ==========================================
 
 let despesas = carregarDados("dmika_despesas");
 let despesaEmEdicao = null;
 
 const formDespesa = document.getElementById("formDespesa");
-const listaDespesas = document.getElementById("listaDespesas");
 
-function atualizarDespesas() {
+function salvarDespesas() {
+    salvarDados("dmika_despesas", despesas);
+}
+
+function mostrarDespesas() {
+    const lista = document.getElementById("listaDespesas");
+    if (!lista) return;
+
+    lista.innerHTML = "";
+
     const total = despesas.reduce(
         (soma, item) => soma + Number(item.valor), 0
     );
@@ -227,53 +219,27 @@ function atualizarDespesas() {
     if (fixasElemento) fixasElemento.textContent = formatarMoeda(fixas);
     if (variaveisElemento) variaveisElemento.textContent = formatarMoeda(variaveis);
 
-    mostrarDespesas();
-}
-
-function mostrarDespesas() {
-    if (!listaDespesas) return;
-
-    listaDespesas.innerHTML = "";
-
     if (despesas.length === 0) {
-        listaDespesas.textContent = "Nenhuma despesa cadastrada.";
+        lista.textContent = "Nenhuma despesa cadastrada ainda.";
         return;
     }
 
-    despesas.forEach(item => {
-        const linha = document.createElement("div");
-        linha.className = "movement";
+    despesas.forEach(despesa => {
+        const item = document.createElement("div");
+        item.className = "meaning";
 
-        const info = document.createElement("div");
+        item.appendChild(criarElemento("h3", despesa.descricao));
+        item.appendChild(criarElemento("p", "Valor: " + formatarMoeda(despesa.valor)));
+        item.appendChild(criarElemento("p", "Categoria: " + despesa.categoria));
+        item.appendChild(criarElemento("p", "Tipo: " + despesa.tipo));
+        item.appendChild(criarElemento("p", "Vencimento: " + (despesa.data || despesa.vencimento || "")));
+        item.appendChild(criarElemento("p", "Status: " + despesa.status));
+        item.appendChild(criarElemento("p", "Responsável: " + despesa.responsavel));
 
-        const titulo = document.createElement("strong");
-        titulo.textContent = item.descricao;
+        item.appendChild(criarBotao("Editar", () => editarDespesa(despesa.id)));
+        item.appendChild(criarBotao("Excluir", () => excluirDespesa(despesa.id)));
 
-        const detalhe = document.createElement("p");
-        detalhe.textContent =
-            item.categoria + " | " +
-            item.tipo + " | " +
-            (item.responsavel || "Não informado");
-
-        const status = document.createElement("p");
-        status.textContent =
-            "Vencimento: " + (item.data || "Não informado") +
-            " | Status: " + item.status;
-
-        const valor = document.createElement("p");
-        valor.textContent = formatarMoeda(item.valor);
-
-        info.append(titulo, detalhe, status, valor);
-
-        const botoes = document.createElement("div");
-
-        botoes.append(
-            criarBotao("Editar", "", () => editarDespesa(item.id)),
-            criarBotao("Excluir", "", () => excluirDespesa(item.id))
-        );
-
-        linha.append(info, botoes);
-        listaDespesas.appendChild(linha);
+        lista.appendChild(item);
     });
 }
 
@@ -281,102 +247,122 @@ if (formDespesa) {
     formDespesa.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const despesa = {
+        const dataVencimento = document.getElementById("vencimentoDespesa").value;
+
+        const novaDespesa = {
             id: despesaEmEdicao || Date.now(),
-            descricao: obterValor("descricaoDespesa"),
-            valor: Number(obterValor("valorDespesa")),
-            categoria: obterValor("categoriaDespesa"),
-            tipo: obterValor("tipoDespesa"),
-            data: obterValor("vencimentoDespesa"),
-            status: obterValor("statusDespesa"),
-            responsavel: obterValor("responsavelDespesa")
+            descricao: document.getElementById("descricaoDespesa").value.trim(),
+            valor: Number(document.getElementById("valorDespesa").value),
+            categoria: document.getElementById("categoriaDespesa").value,
+            tipo: document.getElementById("tipoDespesa").value,
+            data: dataVencimento,
+            vencimento: dataVencimento,
+            status: document.getElementById("statusDespesa").value,
+            responsavel: document.getElementById("responsavelDespesa").value
         };
 
-        if (
-            !despesa.descricao ||
-            !despesa.valor ||
-            despesa.valor <= 0
-        ) {
+        if (!novaDespesa.descricao || novaDespesa.valor <= 0) {
             alert("Preencha os campos corretamente.");
             return;
         }
 
         if (despesaEmEdicao) {
             despesas = despesas.map(item =>
-                item.id === despesaEmEdicao ? despesa : item
+                item.id === despesaEmEdicao ? novaDespesa : item
             );
         } else {
-            despesas.push(despesa);
+            despesas.push(novaDespesa);
         }
 
-        salvarDados("dmika_despesas", despesas);
+        salvarDespesas();
+        mostrarDespesas();
 
-        despesaEmEdicao = null;
         formDespesa.reset();
+        despesaEmEdicao = null;
 
-        const botao = formDespesa.querySelector('button[type="submit"]');
-        if (botao) botao.textContent = "Cadastrar despesa";
-
-        atualizarDespesas();
+        const botao = document.getElementById("botaoDespesa");
+        if (botao) botao.textContent = "Adicionar despesa";
 
         alert("Despesa salva com sucesso!");
+
+        atualizarPlanejamentoSeExistir();
     });
 }
 
 function editarDespesa(id) {
-    const item = despesas.find(despesa => despesa.id === id);
-    if (!item) return;
+    const despesa = despesas.find(item => item.id === id);
+    if (!despesa) return;
 
     despesaEmEdicao = id;
 
-    document.getElementById("descricaoDespesa").value = item.descricao;
-    document.getElementById("valorDespesa").value = item.valor;
-    document.getElementById("categoriaDespesa").value = item.categoria;
-    document.getElementById("tipoDespesa").value = item.tipo;
-    document.getElementById("vencimentoDespesa").value = item.data;
-    document.getElementById("statusDespesa").value = item.status;
-    document.getElementById("responsavelDespesa").value = item.responsavel;
+    document.getElementById("descricaoDespesa").value = despesa.descricao;
+    document.getElementById("valorDespesa").value = despesa.valor;
+    document.getElementById("categoriaDespesa").value = despesa.categoria;
+    document.getElementById("tipoDespesa").value = despesa.tipo;
+    document.getElementById("vencimentoDespesa").value = despesa.data || despesa.vencimento || "";
+    document.getElementById("statusDespesa").value = despesa.status;
+    document.getElementById("responsavelDespesa").value = despesa.responsavel;
 
-    const botao = formDespesa.querySelector('button[type="submit"]');
+    const botao = document.getElementById("botaoDespesa");
     if (botao) botao.textContent = "Salvar alterações";
 
     formDespesa.scrollIntoView({ behavior: "smooth" });
 }
 
 function excluirDespesa(id) {
-    if (!confirm("Deseja excluir esta despesa?")) return;
+    if (!confirm("Deseja realmente excluir esta despesa?")) return;
 
     despesas = despesas.filter(item => item.id !== id);
+    salvarDespesas();
+    mostrarDespesas();
 
-    salvarDados("dmika_despesas", despesas);
-    atualizarDespesas();
+    if (despesaEmEdicao === id) {
+        despesaEmEdicao = null;
+        formDespesa.reset();
 
-    // Atualiza também o comparativo do planejamento.
-    mostrarOrcamento();
+        const botao = document.getElementById("botaoDespesa");
+        if (botao) botao.textContent = "Adicionar despesa";
+    }
+
+    atualizarPlanejamentoSeExistir();
 }
 
-atualizarDespesas();
+mostrarDespesas();
 
-/* ==========================================
-   4. METAS
-========================================== */
+
+// ==========================================
+// METAS
+// ==========================================
 
 let metas = carregarDados("dmika_metas");
 let metaEmEdicao = null;
 
 const formMeta = document.getElementById("formMeta");
-const listaMetas = document.getElementById("listaMetas");
 
-function atualizarMetas() {
+function salvarMetas() {
+    salvarDados("dmika_metas", metas);
+}
+
+function mostrarMetas() {
+    const lista = document.getElementById("listaMetas");
+    if (!lista) return;
+
+    lista.innerHTML = "";
+
     const total = metas.reduce(
-        (soma, item) => soma + Number(item.objetivo), 0
+        (soma, meta) => soma + Number(meta.objetivo), 0
     );
 
     const guardado = metas.reduce(
-        (soma, item) => soma + Number(item.guardado), 0
+        (soma, meta) => soma + Number(meta.guardado), 0
     );
 
-    const falta = total - guardado;
+    const falta = metas.reduce(
+        (soma, meta) => soma + Math.max(
+            0, Number(meta.objetivo) - Number(meta.guardado)
+        ),
+        0
+    );
 
     const totalElemento = document.getElementById("totalMetas");
     const guardadoElemento = document.getElementById("totalGuardadoMetas");
@@ -386,56 +372,47 @@ function atualizarMetas() {
     if (guardadoElemento) guardadoElemento.textContent = formatarMoeda(guardado);
     if (faltaElemento) faltaElemento.textContent = formatarMoeda(falta);
 
-    mostrarMetas();
-}
-
-function mostrarMetas() {
-    if (!listaMetas) return;
-
-    listaMetas.innerHTML = "";
-
     if (metas.length === 0) {
-        listaMetas.textContent = "Nenhuma meta cadastrada.";
+        lista.textContent = "Nenhuma meta cadastrada ainda.";
         return;
     }
 
-    metas.forEach(item => {
-        const linha = document.createElement("div");
-        linha.className = "movement";
+    metas.forEach(meta => {
+        const item = document.createElement("div");
+        item.className = "meaning";
 
-        const info = document.createElement("div");
-
-        const titulo = document.createElement("strong");
-        titulo.textContent = item.nome;
-
-        const detalhe = document.createElement("p");
-        detalhe.textContent =
-            "Responsável: " + item.responsavel +
-            " | Prazo: " + (item.prazo || "Não definido");
-
-        const valores = document.createElement("p");
-        valores.textContent =
-            "Guardado: " + formatarMoeda(item.guardado) +
-            " de " + formatarMoeda(item.objetivo);
-
-        const progresso = document.createElement("p");
-        const percentual = item.objetivo > 0
-            ? Math.min(100, (item.guardado / item.objetivo) * 100)
+        const objetivo = Number(meta.objetivo);
+        const valorGuardado = Number(meta.guardado);
+        const percentual = objetivo > 0
+            ? Math.min(100, valorGuardado / objetivo * 100)
             : 0;
 
-        progresso.textContent = "Progresso: " + percentual.toFixed(1) + "%";
+        item.appendChild(criarElemento("h3", meta.nome));
+        item.appendChild(criarElemento("p", "Objetivo: " + formatarMoeda(objetivo)));
+        item.appendChild(criarElemento("p", "Guardado: " + formatarMoeda(valorGuardado)));
+        item.appendChild(criarElemento(
+            "p",
+            "Prazo: " + (meta.prazo || "").split("-").reverse().join("/")
+        ));
+        item.appendChild(criarElemento("p", "Responsável: " + meta.responsavel));
 
-        info.append(titulo, detalhe, valores, progresso);
+        const barra = document.createElement("div");
+        barra.className = "progress";
 
-        const botoes = document.createElement("div");
+        const progresso = document.createElement("div");
+        progresso.style.width = percentual + "%";
+        barra.appendChild(progresso);
 
-        botoes.append(
-            criarBotao("Editar", "", () => editarMeta(item.id)),
-            criarBotao("Excluir", "", () => excluirMeta(item.id))
-        );
+        item.appendChild(barra);
+        item.appendChild(criarElemento(
+            "p",
+            percentual.toFixed(1).replace(".", ",") + "% concluído"
+        ));
 
-        linha.append(info, botoes);
-        listaMetas.appendChild(linha);
+        item.appendChild(criarBotao("Editar", () => editarMeta(meta.id)));
+        item.appendChild(criarBotao("Excluir", () => excluirMeta(meta.id)));
+
+        lista.appendChild(item);
     });
 }
 
@@ -443,57 +420,52 @@ if (formMeta) {
     formMeta.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const meta = {
+        const novaMeta = {
             id: metaEmEdicao || Date.now(),
-            nome: obterValor("nomeMeta"),
-            objetivo: Number(obterValor("valorObjetivo")),
-            guardado: Number(obterValor("valorGuardado")),
-            prazo: obterValor("prazoMeta"),
-            responsavel: obterValor("responsavelMeta")
+            nome: document.getElementById("nomeMeta").value.trim(),
+            objetivo: Number(document.getElementById("valorObjetivo").value),
+            guardado: Number(document.getElementById("valorGuardado").value),
+            prazo: document.getElementById("prazoMeta").value,
+            responsavel: document.getElementById("responsavelMeta").value
         };
 
-        if (
-            !meta.nome ||
-            meta.objetivo <= 0 ||
-            meta.guardado < 0
-        ) {
+        if (!novaMeta.nome || novaMeta.objetivo <= 0 || novaMeta.guardado < 0) {
             alert("Preencha os campos corretamente.");
             return;
         }
 
         if (metaEmEdicao) {
             metas = metas.map(item =>
-                item.id === metaEmEdicao ? meta : item
+                item.id === metaEmEdicao ? novaMeta : item
             );
         } else {
-            metas.push(meta);
+            metas.push(novaMeta);
         }
 
-        salvarDados("dmika_metas", metas);
+        salvarMetas();
+        mostrarMetas();
 
-        metaEmEdicao = null;
         formMeta.reset();
+        metaEmEdicao = null;
 
         const botao = document.getElementById("botaoMeta");
-        if (botao) botao.textContent = "Cadastrar meta";
-
-        atualizarMetas();
+        if (botao) botao.textContent = "Adicionar meta";
 
         alert("Meta salva com sucesso!");
     });
 }
 
 function editarMeta(id) {
-    const item = metas.find(meta => meta.id === id);
-    if (!item) return;
+    const meta = metas.find(item => item.id === id);
+    if (!meta) return;
 
     metaEmEdicao = id;
 
-    document.getElementById("nomeMeta").value = item.nome;
-    document.getElementById("valorObjetivo").value = item.objetivo;
-    document.getElementById("valorGuardado").value = item.guardado;
-    document.getElementById("prazoMeta").value = item.prazo;
-    document.getElementById("responsavelMeta").value = item.responsavel;
+    document.getElementById("nomeMeta").value = meta.nome;
+    document.getElementById("valorObjetivo").value = meta.objetivo;
+    document.getElementById("valorGuardado").value = meta.guardado;
+    document.getElementById("prazoMeta").value = meta.prazo;
+    document.getElementById("responsavelMeta").value = meta.responsavel;
 
     const botao = document.getElementById("botaoMeta");
     if (botao) botao.textContent = "Salvar alterações";
@@ -502,75 +474,88 @@ function editarMeta(id) {
 }
 
 function excluirMeta(id) {
-    if (!confirm("Deseja excluir esta meta?")) return;
+    if (!confirm("Deseja realmente excluir esta meta?")) return;
 
     metas = metas.filter(item => item.id !== id);
+    salvarMetas();
+    mostrarMetas();
 
-    salvarDados("dmika_metas", metas);
-    atualizarMetas();
+    if (metaEmEdicao === id) {
+        metaEmEdicao = null;
+        formMeta.reset();
+
+        const botao = document.getElementById("botaoMeta");
+        if (botao) botao.textContent = "Adicionar meta";
+    }
 }
 
-atualizarMetas();
+mostrarMetas();
 
-/* ==========================================
-   5. PLANEJAMENTO FINANCEIRO
-========================================== */
 
-const mesPlanejamento = document.getElementById("mesPlanejamento");
+// ==========================================
+// PLANEJAMENTO FINANCEIRO
+// ==========================================
+
+let planejamentos = carregarDados("dmika_planejamentos");
+let orcamentoEmEdicao = null;
+
 const formRendaPlanejada = document.getElementById("formRendaPlanejada");
 const formOrcamento = document.getElementById("formOrcamento");
-const listaOrcamento = document.getElementById("listaOrcamento");
-const comparativoPlanejamento = document.getElementById("comparativoPlanejamento");
+const seletorMes = document.getElementById("mesPlanejamento");
 
-let planejamentos = {};
-
-try {
-    planejamentos = JSON.parse(
-        localStorage.getItem("dmika_planejamentos") || "{}"
-    );
-} catch (erro) {
-    planejamentos = {};
+function obterMesAtual() {
+    const agora = new Date();
+    return agora.getFullYear() + "-" +
+        String(agora.getMonth() + 1).padStart(2, "0");
 }
 
-let categoriaEmEdicao = null;
-
-const agoraPlanejamento = new Date();
-
-const mesAtualPlanejamento =
-    agoraPlanejamento.getFullYear() + "-" +
-    String(agoraPlanejamento.getMonth() + 1).padStart(2, "0");
-
-if (mesPlanejamento && !mesPlanejamento.value) {
-    mesPlanejamento.value = mesAtualPlanejamento;
+function mesSelecionado() {
+    return seletorMes && seletorMes.value
+        ? seletorMes.value
+        : obterMesAtual();
 }
 
 function obterPlanejamento() {
-    if (!mesPlanejamento) return null;
+    let planejamento = planejamentos.find(
+        item => item.mes === mesSelecionado()
+    );
 
-    const mes = mesPlanejamento.value;
-
-    if (!planejamentos[mes]) {
-        planejamentos[mes] = {
+    if (!planejamento) {
+        planejamento = {
+            mes: mesSelecionado(),
             renda: 0,
             categorias: []
         };
+
+        planejamentos.push(planejamento);
     }
 
-    return planejamentos[mes];
+    if (!Array.isArray(planejamento.categorias)) {
+        planejamento.categorias = [];
+    }
+
+    return planejamento;
 }
 
 function salvarPlanejamentos() {
-    localStorage.setItem(
-        "dmika_planejamentos",
-        JSON.stringify(planejamentos)
-    );
+    salvarDados("dmika_planejamentos", planejamentos);
+}
+
+function obterDespesasReais(categoria, mes) {
+    return despesas
+        .filter(despesa => {
+            const data = despesa.data || despesa.vencimento || "";
+
+            return despesa.categoria === categoria &&
+                data.substring(0, 7) === mes;
+        })
+        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
 }
 
 function atualizarResumoPlanejamento() {
     const planejamento = obterPlanejamento();
-    if (!planejamento) return;
 
-    const renda = Number(planejamento.renda);
+    const renda = Number(planejamento.renda || 0);
 
     const totalPlanejado = planejamento.categorias.reduce(
         (soma, item) => soma + Number(item.valor), 0
@@ -578,208 +563,179 @@ function atualizarResumoPlanejamento() {
 
     const saldo = renda - totalPlanejado;
 
-    const resumoRenda = document.getElementById("resumoRenda");
-    const resumoPlanejado = document.getElementById("resumoPlanejado");
-    const resumoSaldo = document.getElementById("resumoSaldo");
+    const rendaElemento = document.getElementById("resumoRenda");
+    const planejadoElemento = document.getElementById("resumoPlanejado");
+    const saldoElemento = document.getElementById("resumoSaldo");
 
-    if (resumoRenda) resumoRenda.textContent = formatarMoeda(renda);
-    if (resumoPlanejado) resumoPlanejado.textContent = formatarMoeda(totalPlanejado);
-    if (resumoSaldo) resumoSaldo.textContent = formatarMoeda(saldo);
-}
+    if (rendaElemento) rendaElemento.textContent = formatarMoeda(renda);
+    if (planejadoElemento) planejadoElemento.textContent = formatarMoeda(totalPlanejado);
+    if (saldoElemento) saldoElemento.textContent = formatarMoeda(saldo);
 
-function obterDespesasReais(categoria) {
-    if (!mesPlanejamento) return 0;
-
-    const mes = mesPlanejamento.value;
-
-    return despesas
-        .filter(despesa =>
-            despesa.categoria === categoria &&
-            despesa.data &&
-            despesa.data.substring(0, 7) === mes
-        )
-        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+    if (saldoElemento) {
+        saldoElemento.style.color = saldo < 0 ? "#ff6b6b" : "";
+    }
 }
 
 function mostrarOrcamento() {
-    if (!listaOrcamento || !comparativoPlanejamento || !mesPlanejamento) {
-        return;
-    }
+    const lista = document.getElementById("listaOrcamento");
+    const comparativo = document.getElementById("comparativoPlanejamento");
+
+    if (!lista || !comparativo) return;
 
     const planejamento = obterPlanejamento();
+    const mes = mesSelecionado();
 
-    listaOrcamento.innerHTML = "";
-    comparativoPlanejamento.innerHTML = "";
+    lista.innerHTML = "";
+    comparativo.innerHTML = "";
 
     if (planejamento.categorias.length === 0) {
-        listaOrcamento.textContent = "Nenhuma categoria planejada ainda.";
-        comparativoPlanejamento.textContent = "Nenhum orçamento cadastrado ainda.";
+        lista.textContent = "Nenhuma categoria planejada ainda.";
+        comparativo.textContent = "Nenhum orçamento cadastrado ainda.";
+    } else {
+        planejamento.categorias.forEach(categoria => {
+            const item = document.createElement("div");
+            item.className = "meaning";
 
-        atualizarResumoPlanejamento();
-        return;
+            item.appendChild(criarElemento("h3", categoria.categoria));
+            item.appendChild(criarElemento(
+                "p",
+                "Valor planejado: " + formatarMoeda(categoria.valor)
+            ));
+
+            item.appendChild(criarBotao(
+                "Editar",
+                () => editarOrcamento(categoria.id)
+            ));
+
+            item.appendChild(criarBotao(
+                "Excluir",
+                () => excluirOrcamento(categoria.id)
+            ));
+
+            lista.appendChild(item);
+
+            const realizado = obterDespesasReais(categoria.categoria, mes);
+            const diferenca = Number(categoria.valor) - realizado;
+
+            const comparacao = document.createElement("div");
+            comparacao.className = "meaning";
+
+            comparacao.appendChild(criarElemento("h3", categoria.categoria));
+            comparacao.appendChild(criarElemento(
+                "p",
+                "Planejado: " + formatarMoeda(categoria.valor)
+            ));
+            comparacao.appendChild(criarElemento(
+                "p",
+                "Realizado: " + formatarMoeda(realizado)
+            ));
+            comparacao.appendChild(criarElemento(
+                "p",
+                diferenca >= 0
+                    ? "Ainda disponível: " + formatarMoeda(diferenca)
+                    : "Acima do planejado: " + formatarMoeda(Math.abs(diferenca))
+            ));
+
+            comparativo.appendChild(comparacao);
+        });
     }
-
-    planejamento.categorias.forEach(item => {
-        const linha = document.createElement("div");
-        linha.className = "movement";
-
-        const info = document.createElement("div");
-
-        const titulo = document.createElement("strong");
-        titulo.textContent = item.categoria;
-
-        const valor = document.createElement("p");
-        valor.textContent = "Planejado: " + formatarMoeda(item.valor);
-
-        info.append(titulo, valor);
-
-        const botoes = document.createElement("div");
-
-        botoes.append(
-            criarBotao("Editar", "", () => editarCategoriaPlanejada(item.id)),
-            criarBotao("Excluir", "", () => excluirCategoriaPlanejada(item.id))
-        );
-
-        linha.append(info, botoes);
-        listaOrcamento.appendChild(linha);
-
-        // Comparação com as despesas cadastradas.
-
-        const realizado = obterDespesasReais(item.categoria);
-        const planejado = Number(item.valor);
-        const diferenca = planejado - realizado;
-
-        const linhaComparativo = document.createElement("div");
-        linhaComparativo.className = "movement";
-
-        const infoComparativo = document.createElement("div");
-
-        const nome = document.createElement("strong");
-        nome.textContent = item.categoria;
-
-        const detalhe = document.createElement("p");
-        detalhe.textContent =
-            "Planejado: " + formatarMoeda(planejado) +
-            " | Realizado: " + formatarMoeda(realizado);
-
-        const resultado = document.createElement("p");
-
-        resultado.textContent = diferenca >= 0
-            ? "Ainda disponível: " + formatarMoeda(diferenca)
-            : "Acima do orçamento: " + formatarMoeda(Math.abs(diferenca));
-
-        infoComparativo.append(nome, detalhe, resultado);
-        linhaComparativo.appendChild(infoComparativo);
-
-        comparativoPlanejamento.appendChild(linhaComparativo);
-    });
 
     atualizarResumoPlanejamento();
 }
-
-/* CADASTRO DE RENDA */
 
 if (formRendaPlanejada) {
     formRendaPlanejada.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const renda = Number(obterValor("rendaPrevista"));
+        const valor = Number(
+            document.getElementById("rendaPrevista").value
+        );
 
-        if (renda < 0 || obterValor("rendaPrevista") === "") {
-            alert("Informe uma renda válida.");
+        if (valor < 0) {
+            alert("Informe um valor válido.");
             return;
         }
 
         const planejamento = obterPlanejamento();
-        planejamento.renda = renda;
+        planejamento.renda = valor;
 
         salvarPlanejamentos();
-        mostrarOrcamento();
-
-        // Mantém o valor preenchido após salvar.
-        document.getElementById("rendaPrevista").value = renda;
+        atualizarResumoPlanejamento();
 
         alert("Renda prevista salva com sucesso!");
     });
 }
 
-/* CADASTRO DE CATEGORIA */
-
 if (formOrcamento) {
     formOrcamento.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const categoria = obterValor("categoriaOrcamento");
-        const valor = Number(obterValor("valorOrcamento"));
+        const categoria = document.getElementById("categoriaOrcamento").value;
+        const valor = Number(document.getElementById("valorOrcamento").value);
 
-        if (!categoria || obterValor("valorOrcamento") === "" || valor < 0) {
-            alert("Preencha os campos corretamente.");
+        if (!categoria || valor <= 0) {
+            alert("Selecione uma categoria e informe um valor válido.");
             return;
         }
 
         const planejamento = obterPlanejamento();
 
-        const existente = planejamento.categorias.find(item =>
-            item.categoria === categoria &&
-            item.id !== categoriaEmEdicao
-        );
-
-        if (existente) {
-            alert("Essa categoria já existe neste mês. Edite o valor existente.");
-            return;
-        }
-
-        const novaCategoria = {
-            id: categoriaEmEdicao || Date.now(),
+        const novoOrcamento = {
+            id: orcamentoEmEdicao || Date.now(),
             categoria: categoria,
             valor: valor
         };
 
-        if (categoriaEmEdicao) {
+        if (orcamentoEmEdicao) {
             planejamento.categorias = planejamento.categorias.map(item =>
-                item.id === categoriaEmEdicao ? novaCategoria : item
+                item.id === orcamentoEmEdicao ? novoOrcamento : item
             );
         } else {
-            planejamento.categorias.push(novaCategoria);
+            planejamento.categorias.push(novoOrcamento);
         }
 
         salvarPlanejamentos();
 
-        categoriaEmEdicao = null;
         formOrcamento.reset();
+        orcamentoEmEdicao = null;
 
-        const botao = formOrcamento.querySelector('button[type="submit"]');
+        const botao = document.getElementById("botaoOrcamento");
+        const cancelar = document.getElementById("cancelarEdicaoOrcamento");
+
         if (botao) botao.textContent = "Adicionar ao orçamento";
+        if (cancelar) cancelar.hidden = true;
 
         mostrarOrcamento();
 
-        alert("Categoria salva no orçamento!");
+        alert("Orçamento salvo com sucesso!");
     });
 }
 
-/* EDITAR CATEGORIA */
-
-function editarCategoriaPlanejada(id) {
+function editarOrcamento(id) {
     const planejamento = obterPlanejamento();
 
-    const item = planejamento.categorias.find(item => item.id === id);
-    if (!item) return;
+    const categoria = planejamento.categorias.find(
+        item => item.id === id
+    );
 
-    categoriaEmEdicao = id;
+    if (!categoria) return;
 
-    document.getElementById("categoriaOrcamento").value = item.categoria;
-    document.getElementById("valorOrcamento").value = item.valor;
+    orcamentoEmEdicao = id;
 
-    const botao = formOrcamento.querySelector('button[type="submit"]');
+    document.getElementById("categoriaOrcamento").value = categoria.categoria;
+    document.getElementById("valorOrcamento").value = categoria.valor;
+
+    const botao = document.getElementById("botaoOrcamento");
+    const cancelar = document.getElementById("cancelarEdicaoOrcamento");
+
     if (botao) botao.textContent = "Salvar alterações";
+    if (cancelar) cancelar.hidden = false;
 
     formOrcamento.scrollIntoView({ behavior: "smooth" });
 }
 
-/* EXCLUIR CATEGORIA */
-
-function excluirCategoriaPlanejada(id) {
-    if (!confirm("Deseja excluir esta categoria do orçamento?")) return;
+function excluirOrcamento(id) {
+    if (!confirm("Deseja realmente excluir este orçamento?")) return;
 
     const planejamento = obterPlanejamento();
 
@@ -789,59 +745,63 @@ function excluirCategoriaPlanejada(id) {
 
     salvarPlanejamentos();
 
-    if (categoriaEmEdicao === id) {
-        categoriaEmEdicao = null;
-        formOrcamento.reset();
-
-        const botao = formOrcamento.querySelector('button[type="submit"]');
-        if (botao) botao.textContent = "Adicionar ao orçamento";
+    if (orcamentoEmEdicao === id) {
+        cancelarEdicaoOrcamento();
     }
 
     mostrarOrcamento();
 }
 
-/* TROCA DE MÊS */
+function cancelarEdicaoOrcamento() {
+    orcamentoEmEdicao = null;
 
-if (mesPlanejamento) {
-    mesPlanejamento.addEventListener("change", function() {
-        categoriaEmEdicao = null;
+    if (formOrcamento) formOrcamento.reset();
 
-        if (formOrcamento) {
-            formOrcamento.reset();
+    const botao = document.getElementById("botaoOrcamento");
+    const cancelar = document.getElementById("cancelarEdicaoOrcamento");
 
-            const botao = formOrcamento.querySelector('button[type="submit"]');
-            if (botao) botao.textContent = "Adicionar ao orçamento";
-        }
+    if (botao) botao.textContent = "Adicionar ao orçamento";
+    if (cancelar) cancelar.hidden = true;
+}
 
+const botaoCancelarOrcamento = document.getElementById(
+    "cancelarEdicaoOrcamento"
+);
+
+if (botaoCancelarOrcamento) {
+    botaoCancelarOrcamento.addEventListener(
+        "click",
+        cancelarEdicaoOrcamento
+    );
+}
+
+if (seletorMes) {
+    seletorMes.value = obterMesAtual();
+
+    seletorMes.addEventListener("change", function() {
         const planejamento = obterPlanejamento();
 
         const campoRenda = document.getElementById("rendaPrevista");
+        if (campoRenda) campoRenda.value = planejamento.renda || "";
 
-        if (campoRenda) {
-            campoRenda.value = planejamento.renda || "";
-        }
-
+        cancelarEdicaoOrcamento();
         mostrarOrcamento();
     });
 }
 
-/* INICIALIZAÇÃO DO PLANEJAMENTO */
+function atualizarPlanejamentoSeExistir() {
+    if (document.getElementById("listaOrcamento")) {
+        mostrarOrcamento();
+    }
+}
 
-if (
-    mesPlanejamento &&
-    formRendaPlanejada &&
-    formOrcamento &&
-    listaOrcamento &&
-    comparativoPlanejamento
-) {
-    const planejamento = obterPlanejamento();
+if (document.getElementById("listaOrcamento")) {
+    const planejamentoInicial = obterPlanejamento();
 
-    document.getElementById("rendaPrevista").value =
-        planejamento.renda || "";
+    const campoRenda = document.getElementById("rendaPrevista");
+    if (campoRenda) {
+        campoRenda.value = planejamentoInicial.renda || "";
+    }
 
     mostrarOrcamento();
 }
-
-/* ==========================================
-   FIM DO SISTEMA DMIKA
-========================================== */
