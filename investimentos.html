@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -46,64 +45,129 @@
 
             <div class="card balance">
                 <p>Total investido</p>
-                <h2>R$ 15.000,00</h2>
-                <span>Exemplo de carteira</span>
+                <h2 id="totalInvestido">R$ 0,00</h2>
+                <span>Valor aplicado</span>
             </div>
 
             <div class="card income">
                 <p>Rendimento acumulado</p>
-                <h2>R$ 850,00</h2>
-                <span>Exemplo de rendimento</span>
+                <h2 id="rendimentoInvestimentos">R$ 0,00</h2>
+                <span>Ganhos acumulados</span>
             </div>
 
             <div class="card expense">
                 <p>Patrimônio total</p>
-                <h2>R$ 15.850,00</h2>
-                <span>Investimento + rendimento</span>
+                <h2 id="patrimonioInvestimentos">R$ 0,00</h2>
+                <span>Aplicações + rendimentos</span>
             </div>
 
         </section>
 
         <section class="panel">
-            <h2>Minha carteira</h2>
-            <p>Exemplo de distribuição dos investimentos.</p>
 
-            <div class="movement">
-                <span>Tesouro Direto</span>
-                <strong>R$ 7.000,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>CDB</span>
-                <strong>R$ 4.000,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Fundos de investimento</span>
-                <strong>R$ 2.000,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Fundos imobiliários</span>
-                <strong>R$ 2.000,00</strong>
-            </div>
-        </section>
-
-        <section class="panel">
             <h2>Adicionar investimento</h2>
-            <p>
-                Futuramente, será possível cadastrar o tipo de
-                investimento, instituição financeira, valor aplicado,
-                data da aplicação e rendimento.
-            </p>
+
+            <form id="formInvestimento">
+
+                <label for="nomeInvestimento">Nome do investimento</label>
+                <input
+                    type="text"
+                    id="nomeInvestimento"
+                    placeholder="Ex.: CDB, Tesouro Selic"
+                    required
+                >
+
+                <label for="instituicaoInvestimento">Instituição financeira</label>
+                <input
+                    type="text"
+                    id="instituicaoInvestimento"
+                    placeholder="Ex.: Nubank, Itaú, Banco do Brasil"
+                    required
+                >
+
+                <label for="tipoInvestimento">Tipo de investimento</label>
+                <select id="tipoInvestimento" required>
+                    <option value="">Selecione</option>
+                    <option value="Tesouro Direto">Tesouro Direto</option>
+                    <option value="CDB">CDB</option>
+                    <option value="LCI/LCA">LCI/LCA</option>
+                    <option value="Poupança">Poupança</option>
+                    <option value="Fundos">Fundos de investimento</option>
+                    <option value="Fundos imobiliários">Fundos imobiliários</option>
+                    <option value="Ações">Ações</option>
+                    <option value="Criptomoedas">Criptomoedas</option>
+                    <option value="Outros">Outros</option>
+                </select>
+
+                <label for="valorAplicado">Valor aplicado (R$)</label>
+                <input
+                    type="number"
+                    id="valorAplicado"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="0,00"
+                    required
+                >
+
+                <label for="rendimentoAplicado">Rendimento atual (R$)</label>
+                <input
+                    type="number"
+                    id="rendimentoAplicado"
+                    step="0.01"
+                    placeholder="0,00"
+                    value="0"
+                    required
+                >
+
+                <label for="dataInvestimento">Data da aplicação</label>
+                <input
+                    type="date"
+                    id="dataInvestimento"
+                    required
+                >
+
+                <label for="responsavelInvestimento">Responsável</label>
+                <select id="responsavelInvestimento" required>
+                    <option value="">Selecione</option>
+                    <option value="Gabriela">Gabriela</option>
+                    <option value="Larissa">Larissa</option>
+                    <option value="Casal">Casal</option>
+                </select>
+
+                <button type="submit" id="botaoInvestimento">
+                    Adicionar investimento
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelarEdicaoInvestimento"
+                    style="display:none;"
+                >
+                    Cancelar edição
+                </button>
+
+            </form>
+
         </section>
 
         <section class="panel">
+
+            <h2>Minha carteira</h2>
+            <p>Investimentos cadastrados.</p>
+
+            <div id="listaInvestimentos">
+                <p>Nenhum investimento cadastrado.</p>
+            </div>
+
+        </section>
+
+        <section class="panel">
+
             <h2>Evolução do patrimônio</h2>
-            <p>
-                Nesta área teremos um gráfico para acompanhar como
-                seus investimentos evoluem ao longo dos meses.
-            </p>
+            <div id="evolucaoInvestimentos">
+                <p>O histórico de evolução aparecerá aqui conforme os investimentos forem atualizados.</p>
+            </div>
+
         </section>
 
         <footer>
@@ -112,7 +176,10 @@
         </footer>
 
     </main>
+
 </div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
