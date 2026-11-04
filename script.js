@@ -1,7 +1,7 @@
 // ======================================================
 // DMIKA - GESTÃO FINANCEIRA INTELIGENTE
-// Script principal: receitas, despesas, metas,
-// planejamento e visão geral.
+// Receitas, despesas, metas, planejamento,
+// investimentos e visão geral.
 // ======================================================
 
 
@@ -13,17 +13,14 @@ const CHAVES = {
     receitas: "dmika_receitas",
     despesas: "dmika_despesas",
     metas: "dmika_metas",
-    planejamentos: "dmika_planejamentos"
+    planejamentos: "dmika_planejamentos",
+    investimentos: "dmika_investimentos"
 };
 
 function carregarDados(chave, padrao = []) {
     try {
         const dados = localStorage.getItem(chave);
-
-        if (dados === null) {
-            return padrao;
-        }
-
+        if (dados === null) return padrao;
         return JSON.parse(dados);
     } catch (erro) {
         console.error("Erro ao carregar " + chave, erro);
@@ -59,24 +56,17 @@ function obterElemento(id) {
 
 function definirTexto(id, texto) {
     const elemento = obterElemento(id);
-
-    if (elemento) {
-        elemento.textContent = texto;
-    }
+    if (elemento) elemento.textContent = texto;
 }
 
 function criarBotao(texto, classe, funcao) {
     const botao = document.createElement("button");
-
     botao.type = "button";
     botao.textContent = texto;
 
-    if (classe) {
-        botao.className = classe;
-    }
+    if (classe) botao.className = classe;
 
     botao.addEventListener("click", funcao);
-
     return botao;
 }
 
@@ -87,9 +77,7 @@ function criarElemento(tag, texto, classe) {
         elemento.textContent = texto;
     }
 
-    if (classe) {
-        elemento.className = classe;
-    }
+    if (classe) elemento.className = classe;
 
     return elemento;
 }
@@ -98,7 +86,6 @@ function formatarData(data) {
     if (!data) return "-";
 
     const partes = String(data).split("-");
-
     if (partes.length !== 3) return data;
 
     return partes[2] + "/" + partes[1] + "/" + partes[0];
@@ -120,7 +107,6 @@ let receitaEmEdicao = null;
 
 function iniciarReceitas() {
     const formulario = obterElemento("formReceita");
-
     if (!formulario) return;
 
     formulario.addEventListener("submit", function (evento) {
@@ -187,7 +173,6 @@ function iniciarReceitas() {
 
 function atualizarReceitas() {
     const lista = obterElemento("listaReceitas");
-
     if (!lista) return;
 
     const receitas = carregarDados(CHAVES.receitas);
@@ -201,31 +186,19 @@ function atualizarReceitas() {
 
     dados.forEach(receita => {
         const linha = criarElemento("div", null, "item-lista");
-
         const informacoes = criarElemento("div");
-        informacoes.appendChild(
-            criarElemento("strong", receita.descricao)
-        );
+
+        informacoes.appendChild(criarElemento("strong", receita.descricao));
 
         informacoes.appendChild(
-            criarElemento(
-                "p",
-                `${receita.categoria || "Sem categoria"} • ${receita.tipo || ""}`
-            )
+            criarElemento("p", `${receita.categoria || "Sem categoria"} • ${receita.tipo || ""}`)
         );
 
         informacoes.appendChild(
-            criarElemento(
-                "small",
-                `${formatarData(receita.data)} • ${receita.responsavel || ""}`
-            )
+            criarElemento("small", `${formatarData(receita.data)} • ${receita.responsavel || ""}`)
         );
 
-        const valor = criarElemento(
-            "strong",
-            formatarMoeda(receita.valor)
-        );
-
+        const valor = criarElemento("strong", formatarMoeda(receita.valor));
         const acoes = criarElemento("div", null, "acoes-item");
 
         acoes.appendChild(
@@ -240,9 +213,7 @@ function atualizarReceitas() {
         lista.appendChild(linha);
     });
 
-    const total = dados.reduce(
-        (soma, item) => soma + Number(item.valor || 0), 0
-    );
+    const total = dados.reduce((soma, item) => soma + Number(item.valor || 0), 0);
 
     const fixas = dados
         .filter(item => item.tipo === "Fixa")
@@ -260,7 +231,6 @@ function atualizarReceitas() {
 function editarReceita(id) {
     const receitas = carregarDados(CHAVES.receitas);
     const receita = receitas.find(item => item.id === id);
-
     if (!receita) return;
 
     obterElemento("descricao").value = receita.descricao || "";
@@ -287,7 +257,6 @@ function excluirReceita(id) {
     if (!salvarDados(CHAVES.receitas, atualizadas)) return;
 
     receitaEmEdicao = null;
-
     atualizarReceitas();
     atualizarDashboard();
 }
@@ -301,7 +270,6 @@ let despesaEmEdicao = null;
 
 function iniciarDespesas() {
     const formulario = obterElemento("formDespesa");
-
     if (!formulario) return;
 
     formulario.addEventListener("submit", function (evento) {
@@ -364,7 +332,6 @@ function iniciarDespesas() {
         if (!salvarDados(CHAVES.despesas, despesas)) return;
 
         formulario.reset();
-
         atualizarDespesas();
         atualizarDashboard();
         atualizarPlanejamento();
@@ -375,7 +342,6 @@ function iniciarDespesas() {
 
 function atualizarDespesas() {
     const lista = obterElemento("listaDespesas");
-
     if (!lista) return;
 
     const despesas = carregarDados(CHAVES.despesas);
@@ -389,37 +355,20 @@ function atualizarDespesas() {
 
     dados.forEach(despesa => {
         const linha = criarElemento("div", null, "item-lista");
-
         const informacoes = criarElemento("div");
 
-        informacoes.appendChild(
-            criarElemento("strong", despesa.descricao)
-        );
+        informacoes.appendChild(criarElemento("strong", despesa.descricao));
 
         informacoes.appendChild(
-            criarElemento(
-                "p",
-                `${despesa.categoria || "Sem categoria"} • ${despesa.tipo || ""}`
-            )
+            criarElemento("p", `${despesa.categoria || "Sem categoria"} • ${despesa.tipo || ""}`)
         );
 
         informacoes.appendChild(
-            criarElemento(
-                "small",
-                `${formatarData(despesa.data || despesa.vencimento)} • ${despesa.responsavel || ""}`
-            )
+            criarElemento("small", `${formatarData(despesa.data || despesa.vencimento)} • ${despesa.responsavel || ""}`)
         );
 
-        const status = criarElemento(
-            "span",
-            despesa.status || "Pendente"
-        );
-
-        const valor = criarElemento(
-            "strong",
-            formatarMoeda(despesa.valor)
-        );
-
+        const status = criarElemento("span", despesa.status || "Pendente");
+        const valor = criarElemento("strong", formatarMoeda(despesa.valor));
         const acoes = criarElemento("div", null, "acoes-item");
 
         acoes.appendChild(
@@ -434,9 +383,7 @@ function atualizarDespesas() {
         lista.appendChild(linha);
     });
 
-    const total = dados.reduce(
-        (soma, item) => soma + Number(item.valor || 0), 0
-    );
+    const total = dados.reduce((soma, item) => soma + Number(item.valor || 0), 0);
 
     const fixas = dados
         .filter(item => item.tipo === "Fixa")
@@ -454,15 +401,13 @@ function atualizarDespesas() {
 function editarDespesa(id) {
     const despesas = carregarDados(CHAVES.despesas);
     const despesa = despesas.find(item => item.id === id);
-
     if (!despesa) return;
 
     obterElemento("descricaoDespesa").value = despesa.descricao || "";
     obterElemento("valorDespesa").value = despesa.valor || "";
     obterElemento("categoriaDespesa").value = despesa.categoria || "";
     obterElemento("tipoDespesa").value = despesa.tipo || "";
-    obterElemento("vencimentoDespesa").value =
-        despesa.data || despesa.vencimento || "";
+    obterElemento("vencimentoDespesa").value = despesa.data || despesa.vencimento || "";
     obterElemento("statusDespesa").value = despesa.status || "Pendente";
     obterElemento("responsavelDespesa").value = despesa.responsavel || "";
 
@@ -483,7 +428,6 @@ function excluirDespesa(id) {
     if (!salvarDados(CHAVES.despesas, atualizadas)) return;
 
     despesaEmEdicao = null;
-
     atualizarDespesas();
     atualizarDashboard();
     atualizarPlanejamento();
@@ -498,7 +442,6 @@ let metaEmEdicao = null;
 
 function iniciarMetas() {
     const formulario = obterElemento("formMeta");
-
     if (!formulario) return;
 
     formulario.addEventListener("submit", function (evento) {
@@ -523,9 +466,7 @@ function iniciarMetas() {
         }
 
         if (metaEmEdicao !== null) {
-            const indice = metas.findIndex(
-                item => item.id === metaEmEdicao
-            );
+            const indice = metas.findIndex(item => item.id === metaEmEdicao);
 
             if (indice !== -1) {
                 metas[indice] = {
@@ -561,7 +502,6 @@ function iniciarMetas() {
 
 function atualizarMetas() {
     const lista = obterElemento("listaMetas");
-
     if (!lista) return;
 
     const metas = carregarDados(CHAVES.metas);
@@ -575,25 +515,16 @@ function atualizarMetas() {
 
     dados.forEach(meta => {
         const linha = criarElemento("div", null, "item-lista");
-
         const informacoes = criarElemento("div");
 
+        informacoes.appendChild(criarElemento("strong", meta.nome));
+
         informacoes.appendChild(
-            criarElemento("strong", meta.nome)
+            criarElemento("p", `Guardado: ${formatarMoeda(meta.guardado)} de ${formatarMoeda(meta.objetivo)}`)
         );
 
         informacoes.appendChild(
-            criarElemento(
-                "p",
-                `Guardado: ${formatarMoeda(meta.guardado)} de ${formatarMoeda(meta.objetivo)}`
-            )
-        );
-
-        informacoes.appendChild(
-            criarElemento(
-                "small",
-                `Prazo: ${formatarData(meta.prazo)} • ${meta.responsavel || ""}`
-            )
+            criarElemento("small", `Prazo: ${formatarData(meta.prazo)} • ${meta.responsavel || ""}`)
         );
 
         const percentual = meta.objetivo > 0
@@ -601,10 +532,7 @@ function atualizarMetas() {
             : 0;
 
         informacoes.appendChild(
-            criarElemento(
-                "p",
-                `${percentual.toFixed(1).replace(".", ",")}% concluído`
-            )
+            criarElemento("p", `${percentual.toFixed(1).replace(".", ",")}% concluído`)
         );
 
         const acoes = criarElemento("div", null, "acoes-item");
@@ -621,13 +549,8 @@ function atualizarMetas() {
         lista.appendChild(linha);
     });
 
-    const total = dados.reduce(
-        (soma, item) => soma + Number(item.objetivo || 0), 0
-    );
-
-    const guardado = dados.reduce(
-        (soma, item) => soma + Number(item.guardado || 0), 0
-    );
+    const total = dados.reduce((soma, item) => soma + Number(item.objetivo || 0), 0);
+    const guardado = dados.reduce((soma, item) => soma + Number(item.guardado || 0), 0);
 
     definirTexto("totalMetas", formatarMoeda(total));
     definirTexto("totalGuardadoMetas", formatarMoeda(guardado));
@@ -637,7 +560,6 @@ function atualizarMetas() {
 function editarMeta(id) {
     const metas = carregarDados(CHAVES.metas);
     const meta = metas.find(item => item.id === id);
-
     if (!meta) return;
 
     obterElemento("nomeMeta").value = meta.nome || "";
@@ -663,7 +585,6 @@ function excluirMeta(id) {
     if (!salvarDados(CHAVES.metas, atualizadas)) return;
 
     metaEmEdicao = null;
-
     atualizarMetas();
 }
 
@@ -689,9 +610,7 @@ function obterMesPlanejamento() {
 
     if (!campo) return mesAtual();
 
-    if (!campo.value) {
-        campo.value = mesAtual();
-    }
+    if (!campo.value) campo.value = mesAtual();
 
     return campo.value;
 }
@@ -720,9 +639,7 @@ function iniciarPlanejamento() {
 
     if (!campoMes && !formularioRenda && !formularioOrcamento) return;
 
-    if (campoMes && !campoMes.value) {
-        campoMes.value = mesAtual();
-    }
+    if (campoMes && !campoMes.value) campoMes.value = mesAtual();
 
     if (campoMes) {
         campoMes.addEventListener("change", function () {
@@ -747,10 +664,7 @@ function iniciarPlanejamento() {
             const planejamentos = obterPlanejamentos();
 
             if (!planejamentos[mes]) {
-                planejamentos[mes] = {
-                    renda: 0,
-                    categorias: []
-                };
+                planejamentos[mes] = { renda: 0, categorias: [] };
             }
 
             planejamentos[mes].renda = renda;
@@ -759,7 +673,6 @@ function iniciarPlanejamento() {
 
             atualizarPlanejamento();
             atualizarDashboard();
-
             alert("Renda prevista salva!");
         });
     }
@@ -780,10 +693,7 @@ function iniciarPlanejamento() {
             const planejamentos = obterPlanejamentos();
 
             if (!planejamentos[mes]) {
-                planejamentos[mes] = {
-                    renda: 0,
-                    categorias: []
-                };
+                planejamentos[mes] = { renda: 0, categorias: [] };
             }
 
             if (!Array.isArray(planejamentos[mes].categorias)) {
@@ -793,9 +703,7 @@ function iniciarPlanejamento() {
             const categorias = planejamentos[mes].categorias;
 
             if (orcamentoEmEdicao !== null) {
-                const indice = categorias.findIndex(
-                    item => item.id === orcamentoEmEdicao
-                );
+                const indice = categorias.findIndex(item => item.id === orcamentoEmEdicao);
 
                 if (indice !== -1) {
                     categorias[indice] = {
@@ -834,7 +742,6 @@ function iniciarPlanejamento() {
 
 function atualizarPlanejamento() {
     const lista = obterElemento("listaOrcamento");
-
     if (!lista) return;
 
     const mes = obterMesPlanejamento();
@@ -869,33 +776,22 @@ function atualizarPlanejamento() {
 
     categorias.forEach(item => {
         const linha = criarElemento("div", null, "item-lista");
-
         const informacoes = criarElemento("div");
 
         informacoes.appendChild(
             criarElemento("strong", item.categoria || item.nome || "Categoria")
         );
 
-        informacoes.appendChild(
-            criarElemento("p", formatarMoeda(item.valor))
-        );
+        informacoes.appendChild(criarElemento("p", formatarMoeda(item.valor)));
 
         const acoes = criarElemento("div", null, "acoes-item");
 
         acoes.appendChild(
-            criarBotao(
-                "Editar",
-                "btn-editar",
-                () => editarOrcamento(item.id)
-            )
+            criarBotao("Editar", "btn-editar", () => editarOrcamento(item.id))
         );
 
         acoes.appendChild(
-            criarBotao(
-                "Excluir",
-                "btn-excluir",
-                () => excluirOrcamento(item.id)
-            )
+            criarBotao("Excluir", "btn-excluir", () => excluirOrcamento(item.id))
         );
 
         linha.append(informacoes, acoes);
@@ -913,27 +809,18 @@ function editarOrcamento(id) {
 
     const categorias = planejamentos[mes].categorias || [];
     const item = categorias.find(categoria => categoria.id === id);
-
     if (!item) return;
 
-    obterElemento("categoriaOrcamento").value =
-        item.categoria || item.nome || "";
-
+    obterElemento("categoriaOrcamento").value = item.categoria || item.nome || "";
     obterElemento("valorOrcamento").value = item.valor || "";
 
     orcamentoEmEdicao = id;
 
     const botao = obterElemento("botaoOrcamento");
-
-    if (botao) {
-        botao.textContent = "Salvar alterações";
-    }
+    if (botao) botao.textContent = "Salvar alterações";
 
     const cancelar = obterElemento("cancelarEdicaoOrcamento");
-
-    if (cancelar) {
-        cancelar.hidden = false;
-    }
+    if (cancelar) cancelar.hidden = false;
 
     obterElemento("formOrcamento").scrollIntoView({
         behavior: "smooth",
@@ -945,22 +832,13 @@ function cancelarEdicaoOrcamento() {
     orcamentoEmEdicao = null;
 
     const formulario = obterElemento("formOrcamento");
-
-    if (formulario) {
-        formulario.reset();
-    }
+    if (formulario) formulario.reset();
 
     const botao = obterElemento("botaoOrcamento");
-
-    if (botao) {
-        botao.textContent = "Adicionar ao orçamento";
-    }
+    if (botao) botao.textContent = "Adicionar ao orçamento";
 
     const cancelar = obterElemento("cancelarEdicaoOrcamento");
-
-    if (cancelar) {
-        cancelar.hidden = true;
-    }
+    if (cancelar) cancelar.hidden = true;
 }
 
 function excluirOrcamento(id) {
@@ -972,8 +850,7 @@ function excluirOrcamento(id) {
     if (!planejamentos[mes]) return;
 
     planejamentos[mes].categorias =
-        (planejamentos[mes].categorias || [])
-            .filter(item => item.id !== id);
+        (planejamentos[mes].categorias || []).filter(item => item.id !== id);
 
     if (!salvarDados(CHAVES.planejamentos, planejamentos)) return;
 
@@ -983,7 +860,6 @@ function excluirOrcamento(id) {
 
 function atualizarComparativoPlanejamento(mes, categorias) {
     const comparativo = obterElemento("comparativoPlanejamento");
-
     if (!comparativo) return;
 
     const despesas = carregarDados(CHAVES.despesas);
@@ -1003,38 +879,20 @@ function atualizarComparativoPlanejamento(mes, categorias) {
 
     categorias.forEach(item => {
         const nomeCategoria = item.categoria || item.nome;
-
         const planejado = Number(item.valor || 0);
 
         const realizado = despesasMes
             .filter(despesa => despesa.categoria === nomeCategoria)
-            .reduce(
-                (soma, despesa) => soma + Number(despesa.valor || 0), 0
-            );
+            .reduce((soma, despesa) => soma + Number(despesa.valor || 0), 0);
 
         const diferenca = planejado - realizado;
 
         const linha = criarElemento("div", null, "item-lista");
-
         const informacoes = criarElemento("div");
 
-        informacoes.appendChild(
-            criarElemento("strong", nomeCategoria)
-        );
-
-        informacoes.appendChild(
-            criarElemento(
-                "p",
-                `Planejado: ${formatarMoeda(planejado)}`
-            )
-        );
-
-        informacoes.appendChild(
-            criarElemento(
-                "p",
-                `Realizado: ${formatarMoeda(realizado)}`
-            )
-        );
+        informacoes.appendChild(criarElemento("strong", nomeCategoria));
+        informacoes.appendChild(criarElemento("p", `Planejado: ${formatarMoeda(planejado)}`));
+        informacoes.appendChild(criarElemento("p", `Realizado: ${formatarMoeda(realizado)}`));
 
         informacoes.appendChild(
             criarElemento(
@@ -1052,30 +910,274 @@ function atualizarComparativoPlanejamento(mes, categorias) {
 
 
 // ------------------------------------------------------
-// 6. VISÃO GERAL / DASHBOARD
+// 6. INVESTIMENTOS
+// ------------------------------------------------------
+
+let investimentoEmEdicao = null;
+
+function iniciarInvestimentos() {
+    const formulario = obterElemento("formInvestimento");
+    if (!formulario) return;
+
+    const botaoCancelar = obterElemento("cancelarEdicaoInvestimento");
+
+    formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+
+        const nome = obterElemento("nomeInvestimento").value.trim();
+        const instituicao = obterElemento("instituicaoInvestimento").value.trim();
+        const tipo = obterElemento("tipoInvestimento").value;
+        const valorAplicado = Number(obterElemento("valorAplicado").value);
+        const rendimento = Number(obterElemento("rendimentoAplicado").value);
+        const data = obterElemento("dataInvestimento").value;
+        const responsavel = obterElemento("responsavelInvestimento").value;
+
+        if (
+            !nome ||
+            !instituicao ||
+            !tipo ||
+            valorAplicado <= 0 ||
+            !Number.isFinite(rendimento) ||
+            !data ||
+            !responsavel
+        ) {
+            alert("Preencha todos os campos corretamente.");
+            return;
+        }
+
+        const investimentos = carregarDados(CHAVES.investimentos);
+
+        if (!Array.isArray(investimentos)) {
+            alert("Não foi possível reconhecer os investimentos cadastrados.");
+            return;
+        }
+
+        if (investimentoEmEdicao !== null) {
+            const indice = investimentos.findIndex(
+                item => item.id === investimentoEmEdicao
+            );
+
+            if (indice !== -1) {
+                investimentos[indice] = {
+                    ...investimentos[indice],
+                    nome,
+                    instituicao,
+                    tipo,
+                    valorAplicado,
+                    rendimento,
+                    data,
+                    responsavel
+                };
+            }
+
+            investimentoEmEdicao = null;
+        } else {
+            investimentos.push({
+                id: gerarId(),
+                nome,
+                instituicao,
+                tipo,
+                valorAplicado,
+                rendimento,
+                data,
+                responsavel
+            });
+        }
+
+        if (!salvarDados(CHAVES.investimentos, investimentos)) return;
+
+        formulario.reset();
+        obterElemento("rendimentoAplicado").value = "0";
+
+        if (botaoCancelar) botaoCancelar.hidden = true;
+
+        atualizarInvestimentos();
+        alert("Investimento salvo com sucesso!");
+    });
+
+    if (botaoCancelar) {
+        botaoCancelar.addEventListener("click", cancelarEdicaoInvestimento);
+    }
+
+    atualizarInvestimentos();
+}
+
+function atualizarInvestimentos() {
+    const lista = obterElemento("listaInvestimentos");
+    if (!lista) return;
+
+    const salvos = carregarDados(CHAVES.investimentos);
+    const investimentos = Array.isArray(salvos) ? salvos : [];
+
+    lista.innerHTML = "";
+
+    if (investimentos.length === 0) {
+        lista.textContent = "Nenhum investimento cadastrado ainda.";
+    }
+
+    let totalAplicado = 0;
+    let totalRendimento = 0;
+
+    investimentos.forEach(investimento => {
+        const aplicado = Number(investimento.valorAplicado || 0);
+        const rendimento = Number(investimento.rendimento || 0);
+        const patrimonio = aplicado + rendimento;
+
+        totalAplicado += aplicado;
+        totalRendimento += rendimento;
+
+        const linha = criarElemento("div", null, "item-lista");
+        const informacoes = criarElemento("div");
+
+        informacoes.appendChild(
+            criarElemento("strong", investimento.nome)
+        );
+
+        informacoes.appendChild(
+            criarElemento(
+                "p",
+                `${investimento.tipo} • ${investimento.instituicao}`
+            )
+        );
+
+        informacoes.appendChild(
+            criarElemento(
+                "small",
+                `${formatarData(investimento.data)} • ${investimento.responsavel}`
+            )
+        );
+
+        informacoes.appendChild(
+            criarElemento(
+                "p",
+                `Aplicado: ${formatarMoeda(aplicado)}`
+            )
+        );
+
+        informacoes.appendChild(
+            criarElemento(
+                "p",
+                `Rendimento: ${formatarMoeda(rendimento)}`
+            )
+        );
+
+        informacoes.appendChild(
+            criarElemento(
+                "strong",
+                `Patrimônio: ${formatarMoeda(patrimonio)}`
+            )
+        );
+
+        const acoes = criarElemento("div", null, "acoes-item");
+
+        acoes.appendChild(
+            criarBotao(
+                "Editar",
+                "btn-editar",
+                () => editarInvestimento(investimento.id)
+            )
+        );
+
+        acoes.appendChild(
+            criarBotao(
+                "Excluir",
+                "btn-excluir",
+                () => excluirInvestimento(investimento.id)
+            )
+        );
+
+        linha.append(informacoes, acoes);
+        lista.appendChild(linha);
+    });
+
+    definirTexto("totalInvestido", formatarMoeda(totalAplicado));
+    definirTexto("rendimentoInvestimentos", formatarMoeda(totalRendimento));
+    definirTexto(
+        "patrimonioInvestimentos",
+        formatarMoeda(totalAplicado + totalRendimento)
+    );
+}
+
+function editarInvestimento(id) {
+    const investimentos = carregarDados(CHAVES.investimentos);
+    const investimento = investimentos.find(item => item.id === id);
+
+    if (!investimento) return;
+
+    obterElemento("nomeInvestimento").value = investimento.nome || "";
+    obterElemento("instituicaoInvestimento").value = investimento.instituicao || "";
+    obterElemento("tipoInvestimento").value = investimento.tipo || "";
+    obterElemento("valorAplicado").value = investimento.valorAplicado || "";
+    obterElemento("rendimentoAplicado").value = investimento.rendimento ?? 0;
+    obterElemento("dataInvestimento").value = investimento.data || "";
+    obterElemento("responsavelInvestimento").value = investimento.responsavel || "";
+
+    investimentoEmEdicao = id;
+
+    const botao = obterElemento("botaoInvestimento");
+    if (botao) botao.textContent = "Salvar alterações";
+
+    const cancelar = obterElemento("cancelarEdicaoInvestimento");
+    if (cancelar) cancelar.hidden = false;
+
+    obterElemento("formInvestimento").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+function cancelarEdicaoInvestimento() {
+    investimentoEmEdicao = null;
+
+    const formulario = obterElemento("formInvestimento");
+    if (formulario) formulario.reset();
+
+    const rendimento = obterElemento("rendimentoAplicado");
+    if (rendimento) rendimento.value = "0";
+
+    const botao = obterElemento("botaoInvestimento");
+    if (botao) botao.textContent = "Adicionar investimento";
+
+    const cancelar = obterElemento("cancelarEdicaoInvestimento");
+    if (cancelar) cancelar.hidden = true;
+}
+
+function excluirInvestimento(id) {
+    if (!confirm("Deseja realmente excluir este investimento?")) return;
+
+    const investimentos = carregarDados(CHAVES.investimentos);
+
+    const atualizados = investimentos.filter(
+        item => item.id !== id
+    );
+
+    if (!salvarDados(CHAVES.investimentos, atualizados)) return;
+
+    if (investimentoEmEdicao === id) {
+        cancelarEdicaoInvestimento();
+    }
+
+    atualizarInvestimentos();
+}
+
+
+// ------------------------------------------------------
+// 7. VISÃO GERAL / DASHBOARD
 // ------------------------------------------------------
 
 function atualizarDashboard() {
     const seletorMes = obterElemento("mesDashboard");
-
     if (!seletorMes) return;
 
-    if (!seletorMes.value) {
-        seletorMes.value = mesAtual();
-    }
+    if (!seletorMes.value) seletorMes.value = mesAtual();
 
     const mes = seletorMes.value;
 
     const receitasSalvas = carregarDados(CHAVES.receitas);
     const despesasSalvas = carregarDados(CHAVES.despesas);
 
-    const receitas = Array.isArray(receitasSalvas)
-        ? receitasSalvas
-        : [];
-
-    const despesas = Array.isArray(despesasSalvas)
-        ? despesasSalvas
-        : [];
+    const receitas = Array.isArray(receitasSalvas) ? receitasSalvas : [];
+    const despesas = Array.isArray(despesasSalvas) ? despesasSalvas : [];
 
     const receitasMes = receitas.filter(receita =>
         String(receita.data || "").startsWith(mes)
@@ -1098,9 +1200,7 @@ function atualizarDashboard() {
         .filter(despesa =>
             String(despesa.status || "").toLowerCase() === "paga"
         )
-        .reduce(
-            (soma, item) => soma + Number(item.valor || 0), 0
-        );
+        .reduce((soma, item) => soma + Number(item.valor || 0), 0);
 
     const saldo = totalReceitas - despesasPagas;
 
@@ -1114,9 +1214,7 @@ function atualizarDashboard() {
         ? Math.min(100, despesasPagas / totalReceitas * 100)
         : 0;
 
-    if (barra) {
-        barra.style.width = percentual + "%";
-    }
+    if (barra) barra.style.width = percentual + "%";
 
     definirTexto(
         "resumoPercentualDashboard",
@@ -1126,8 +1224,8 @@ function atualizarDashboard() {
             : "Cadastre receitas para visualizar o resumo."
     );
 
-    // Planejamento do mês
     const planejamentos = obterPlanejamentos();
+
     const planejamento = planejamentos[mes] || {
         renda: 0,
         categorias: []
@@ -1151,9 +1249,7 @@ function atualizarDashboard() {
         formatarMoeda(rendaPrevista - totalPlanejado)
     );
 
-    // Últimas movimentações
     const lista = obterElemento("movimentacoesDashboard");
-
     if (!lista) return;
 
     lista.innerHTML = "";
@@ -1201,9 +1297,7 @@ function atualizarDashboard() {
             formatarMoeda(item.valor)
         );
 
-        if (item.tipo === "receita") {
-            valor.className = "positive";
-        }
+        if (item.tipo === "receita") valor.className = "positive";
 
         linha.append(descricao, valor);
         lista.appendChild(linha);
@@ -1212,34 +1306,32 @@ function atualizarDashboard() {
 
 
 // ------------------------------------------------------
-// 7. INICIALIZAÇÃO
+// 8. INICIALIZAÇÃO
 // ------------------------------------------------------
 
 iniciarReceitas();
 iniciarDespesas();
 iniciarMetas();
 iniciarPlanejamento();
+iniciarInvestimentos();
 
 const campoMesDashboard = obterElemento("mesDashboard");
 
 if (campoMesDashboard) {
-    if (!campoMesDashboard.value) {
-        campoMesDashboard.value = mesAtual();
-    }
+    if (!campoMesDashboard.value) campoMesDashboard.value = mesAtual();
 
     campoMesDashboard.addEventListener("change", atualizarDashboard);
 }
 
 atualizarDashboard();
 
-
-// Atualiza a página caso outra aba do navegador altere os dados.
 window.addEventListener("storage", function (evento) {
     if (!evento.key || Object.values(CHAVES).includes(evento.key)) {
         atualizarReceitas();
         atualizarDespesas();
         atualizarMetas();
         atualizarPlanejamento();
+        atualizarInvestimentos();
         atualizarDashboard();
     }
 });
