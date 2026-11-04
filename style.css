@@ -339,3 +339,65 @@ footer strong {
         gap: 10px;
     }
 }
+
+/* =================================
+   FORMULÁRIOS DO PLANEJAMENTO
+================================= */
+
+.panel form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    max-width: 500px;
+}
+
+.panel form label {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.panel form input,
+.panel form select {
+    width: 100%;
+    padding: 13px;
+    background: #202b3b;
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.panel form input:focus,
+.panel form select:focus {
+    outline: 2px solid var(--green);
+}
+
+.panel form button {
+    padding: 14px;
+    background: var(--green);
+    color: #10151f;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.panel form button:hover {
+    opacity: 0.85;
+}
+
+#listaOrcamento,
+#comparativoPlanejamento {
+    margin-top: 20px;
+}
+
+#listaOrcamento button {
+    padding: 8px 12px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
