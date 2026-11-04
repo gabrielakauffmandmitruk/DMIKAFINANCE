@@ -41,86 +41,96 @@
                 <p>Organize o dinheiro antes de gastar.</p>
             </div>
 
-            <select>
-                <option>Janeiro 2026</option>
-                <option>Fevereiro 2026</option>
-                <option>Março 2026</option>
-                <option>Abril 2026</option>
-                <option>Maio 2026</option>
-                <option>Junho 2026</option>
-                <option>Julho 2026</option>
-                <option>Agosto 2026</option>
-                <option>Setembro 2026</option>
-                <option>Outubro 2026</option>
-                <option>Novembro 2026</option>
-                <option>Dezembro 2026</option>
-            </select>
+            <input type="month" id="mesPlanejamento">
         </header>
+
+        <section class="panel">
+            <h2>Renda prevista</h2>
+            <p>Quanto vocês esperam receber neste mês?</p>
+
+            <form id="formRendaPlanejada">
+                <label for="rendaPrevista">Renda mensal prevista (R$)</label>
+                <input
+                    type="number"
+                    id="rendaPrevista"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ex.: 8000"
+                    required
+                >
+
+                <button type="submit">Salvar renda prevista</button>
+            </form>
+        </section>
 
         <section class="cards">
 
             <div class="card income">
                 <p>Renda prevista</p>
-                <h2>R$ 8.000,00</h2>
-                <span>Exemplo de planejamento</span>
+                <h2 id="resumoRenda">R$ 0,00</h2>
+                <span>Orçamento mensal</span>
             </div>
 
             <div class="card expense">
                 <p>Despesas planejadas</p>
-                <h2>R$ 5.500,00</h2>
-                <span>Exemplo de planejamento</span>
+                <h2 id="resumoPlanejado">R$ 0,00</h2>
+                <span>Orçamento definido</span>
             </div>
 
             <div class="card balance">
                 <p>Saldo previsto</p>
-                <h2>R$ 2.500,00</h2>
-                <span>Valor que poderá sobrar</span>
+                <h2 id="resumoSaldo">R$ 0,00</h2>
+                <span>Renda menos orçamento</span>
             </div>
 
         </section>
 
         <section class="panel">
             <h2>Distribuição do orçamento</h2>
-            <p>Veja como a renda prevista será distribuída.</p>
+            <p>Defina quanto pretendem gastar em cada categoria.</p>
 
-            <div class="movement">
-                <span>Moradia</span>
-                <strong>R$ 1.800,00</strong>
-            </div>
+            <form id="formOrcamento">
 
-            <div class="movement">
-                <span>Alimentação</span>
-                <strong>R$ 900,00</strong>
-            </div>
+                <label for="categoriaOrcamento">Categoria</label>
+                <select id="categoriaOrcamento" required>
+                    <option value="">Selecione</option>
+                    <option value="Moradia">Moradia</option>
+                    <option value="Alimentação">Alimentação</option>
+                    <option value="Contas da casa">Contas da casa</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Lazer">Lazer</option>
+                    <option value="Compras pessoais">Compras pessoais</option>
+                    <option value="Saúde">Saúde</option>
+                    <option value="Educação">Educação</option>
+                    <option value="Outros">Outros</option>
+                </select>
 
-            <div class="movement">
-                <span>Contas da casa</span>
-                <strong>R$ 700,00</strong>
-            </div>
+                <label for="valorOrcamento">Valor planejado (R$)</label>
+                <input
+                    type="number"
+                    id="valorOrcamento"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ex.: 1000"
+                    required
+                >
 
-            <div class="movement">
-                <span>Transporte</span>
-                <strong>R$ 500,00</strong>
-            </div>
+                <button type="submit">Adicionar ao orçamento</button>
 
-            <div class="movement">
-                <span>Lazer e compras</span>
-                <strong>R$ 600,00</strong>
-            </div>
+            </form>
 
-            <div class="movement">
-                <span>Outras despesas</span>
-                <strong>R$ 1.000,00</strong>
+            <div id="listaOrcamento">
+                Nenhuma categoria planejada ainda.
             </div>
         </section>
 
         <section class="panel">
             <h2>Planejado x realizado</h2>
-            <p>
-                Nesta área, futuramente, vamos comparar automaticamente
-                o valor que vocês planejaram gastar com o valor que
-                realmente gastaram.
-            </p>
+            <p>Compare o orçamento com as despesas cadastradas.</p>
+
+            <div id="comparativoPlanejamento">
+                Nenhum orçamento cadastrado ainda.
+            </div>
         </section>
 
         <footer>
@@ -130,6 +140,8 @@
 
     </main>
 </div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
