@@ -214,3 +214,244 @@ if (seletorMes) {
 if (formReceita && listaReceitas) {
     mostrarReceitas();
 }
+
+// ======================================
+// CONTROLE DE DESPESAS DO DMIKA
+// ======================================
+
+const formDespesa = document.getElementById("formDespesa");
+const listaDespesas = document.getElementById("listaDespesas");
+
+let despesas = JSON.parse(localStorage.getItem("dmika_despesas") || "[]");
+
+let despesaEmEdicao = null;
+
+// Formatar valores em reais
+function formatarMoedaDespesa(valor) {
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+// Salvar despesas no navegador
+function salvarDespesas() {
+    localStorage.setItem("dmika_despesas", JSON.stringify(despesas));
+}
+
+// Atualizar os cartões de resumo
+function atualizarResumoDespesas() {
+
+    const total = despesas.reduce(
+        (soma, despesa) => soma + Number(despesa.valor), 0
+    );
+
+    const fixas = despesas
+        .filter(despesa => despesa.tipo === "Fixa")
+        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+
+    const variaveis = despesas
+        .filter(despesa => despesa.tipo === "Variável")
+        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+
+    document.getElementById("totalDespesas").textContent =
+        formatarMoedaDespesa(total);
+
+    document.getElementById("totalDespesasFixas").textContent =
+        formatarMoedaDespesa(fixas);
+
+    document.getElementById("totalDespesasVariaveis").textContent =
+        formatarMoedaDespesa(variaveis);
+}
+
+// Mostrar despesas na tela
+function mostrarDespesas() {
+
+    listaDespesas.innerHTML = "";
+
+    if (despesas.length === 0) {
+        listaDespesas.textContent = "Nenhuma despesa cadastrada ainda.";
+        atualizarResumoDespesas();
+        return;
+    }
+
+    despesas.forEach(despesa => {
+
+        const item = document.createElement("div");
+        item.className = "movement";
+
+        const informacoes = document.createElement("div");
+
+        const descricao = document.createElement("strong");
+        descricao.textContent = despesa.descricao;
+
+        const detalhes = document.createElement("p");
+        detalhes.textContent =
+            `${despesa.categoria} | ${despesa.tipo} | ` +
+            `${despesa.responsavel} | Vencimento: ${despesa.data}`;
+
+        const status = document.createElement("p");
+        status.textContent = "Status: " + despesa.status;
+
+        const valor = document.createElement("strong");
+        valor.textContent = formatarMoedaDespesa(despesa.valor);
+
+        informacoes.append(descricao, detalhes, status, valor);
+
+        const botoes = document.createElement("div");
+
+        const botaoEditar = document.createElement("button");
+        botaoEditar.type = "button";
+        botaoEditar.textContent = "Editar";
+
+        botaoEditar.addEventListener("click", function() {
+            editarDespesa(despesa.id);
+        });
+
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.type = "button";
+        botaoExcluir.textContent = "Excluir";
+
+        botaoExcluir.addEventListener("click", function() {
+            excluirDespesa(despesa.id);
+        });
+
+        botoes.append(botaoEditar, botaoExcluir);
+        item.append(informacoes, botoes);
+
+        listaDespesas.appendChild(item);
+    });
+
+    atualizarResumoDespesas();
+}
+
+// Cadastrar ou atualizar despesa
+if (formDespesa) {
+
+    formDespesa.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const descricao = document.getElementById("descricaoDespesa").value.trim();
+        const valor = Number(document.getElementById("valorDespesa").value);
+        const categoria = document.getElementById("categoriaDespesa").value;
+        const tipo = document.getElementById("tipoDespesa").value;
+        const data = document.getElementById("vencimentoDespesa").value;
+        const status = document.getElementById("statusDespesa").value;
+        const responsavel = document.getElementById("responsavelDespesa").value;
+
+        if (!descricao || valor <= 0 || !categoria || !tipo || !data || !status || !responsavel) {
+            alert("Preencha todos os campos corretamente.");
+            return;
+        }
+
+        const novaDespesa = {
+            id: despesaEmEdicao || Date.now(),
+            descricao,
+            valor,
+            categoria,
+            tipo,
+            data,
+            status,
+            responsavel
+        };
+
+        if (despesaEmEdicao) {
+
+            despesas = despesas.map(despesa =>
+                despesa.id === despesaEmEdicao ? novaDespesa : despesa
+            );
+
+        } else {
+
+            despesas.push(novaDespesa);
+
+        }
+
+        salvarDespesas();
+        mostrarDespesas();
+        formDespesa.reset();
+
+        despesaEmEdicao = null;
+
+        document.getElementById("botaoDespesa").textContent =
+            "Adicionar despesa";
+
+        document.getElementById("cancelarEdicaoDespesa").hidden = true;
+
+        alert("Despesa salva com sucesso!");
+    });
+
+    // Botão para cancelar edição
+    const botaoCancelarDespesa = document.createElement("button");
+
+    botaoCancelarDespesa.type = "button";
+    botaoCancelarDespesa.id = "cancelarEdicaoDespesa";
+    botaoCancelarDespesa.textContent = "Cancelar edição";
+    botaoCancelarDespesa.hidden = true;
+
+    botaoCancelarDespesa.addEventListener("click", cancelarEdicaoDespesa);
+
+    formDespesa.appendChild(botaoCancelarDespesa);
+}
+
+// Editar despesa
+function editarDespesa(id) {
+
+    const despesa = despesas.find(item => item.id === id);
+
+    if (!despesa) return;
+
+    despesaEmEdicao = id;
+
+    document.getElementById("descricaoDespesa").value = despesa.descricao;
+    document.getElementById("valorDespesa").value = despesa.valor;
+    document.getElementById("categoriaDespesa").value = despesa.categoria;
+    document.getElementById("tipoDespesa").value = despesa.tipo;
+    document.getElementById("vencimentoDespesa").value = despesa.data;
+    document.getElementById("statusDespesa").value = despesa.status;
+    document.getElementById("responsavelDespesa").value = despesa.responsavel;
+
+    document.getElementById("botaoDespesa").textContent =
+        "Salvar alterações";
+
+    document.getElementById("cancelarEdicaoDespesa").hidden = false;
+
+    formDespesa.scrollIntoView({ behavior: "smooth" });
+}
+
+// Excluir despesa
+function excluirDespesa(id) {
+
+    const confirmar = confirm("Deseja realmente excluir esta despesa?");
+
+    if (!confirmar) return;
+
+    despesas = despesas.filter(despesa => despesa.id !== id);
+
+    salvarDespesas();
+    mostrarDespesas();
+
+    if (despesaEmEdicao === id) {
+        cancelarEdicaoDespesa();
+    }
+}
+
+// Cancelar edição
+function cancelarEdicaoDespesa() {
+
+    despesaEmEdicao = null;
+
+    formDespesa.reset();
+
+    document.getElementById("botaoDespesa").textContent =
+        "Adicionar despesa";
+
+    document.getElementById("cancelarEdicaoDespesa").hidden = true;
+}
+
+// Carregar despesas quando abrir a página
+if (formDespesa && listaDespesas) {
+    mostrarDespesas();
+}
+
