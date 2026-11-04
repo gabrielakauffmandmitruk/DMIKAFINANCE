@@ -4,114 +4,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Dinheiro</title>
+    <title>DMIKA | Gestão Financeira Inteligente</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <aside class="sidebar">
-            <h2>💰 Nosso Dinheiro</h2>
+    <aside class="sidebar">
 
-            <nav>
-                <a href="#" class="active">▦ Visão geral</a>
-                <a href="#">▤ Lançamentos</a>
-                <a href="#">▣ Despesas</a>
-                <a href="#">◷ Planejamento</a>
-                <a href="#">▥ Relatórios</a>
-            </nav>
+        <div class="brand">
+            <h2>DMIKA<span>.</span></h2>
+            <small>GESTÃO FINANCEIRA INTELIGENTE</small>
+        </div>
 
-            <div class="couple">
-                <span>G</span>
-                <span>L</span>
-                <p>Gabriela & Larissa</p>
+        <nav>
+            <a href="#" class="active">▦ Visão geral</a>
+            <a href="#">▤ Receitas</a>
+            <a href="#">▣ Despesas</a>
+            <a href="#">◷ Planejamento</a>
+            <a href="#">◎ Metas</a>
+            <a href="#">▥ Investimentos</a>
+            <a href="#">▤ Relatórios</a>
+        </nav>
+
+        <div class="couple">
+            <span>D</span>
+            <p>Minha conta</p>
+        </div>
+
+    </aside>
+
+    <main class="content">
+
+        <header>
+            <div>
+                <h1>Bem-vindo ao DMIKA</h1>
+                <p>Seu dinheiro, suas metas, seu futuro.</p>
             </div>
-        </aside>
 
-        <main class="content">
+            <select id="mes">
+                <option value="Novembro">Novembro</option>
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
+        </header>
 
-            <header>
-                <div>
-                    <h1>Visão geral</h1>
-                    <p>Acompanhe a vida financeira de vocês.</p>
-                </div>
+        <section class="cards">
 
-                <select id="mes">
-                    <option value="Novembro">Novembro</option>
-                    <option value="Janeiro">Janeiro</option>
-                    <option value="Fevereiro">Fevereiro</option>
-                    <option value="Março">Março</option>
-                    <option value="Abril">Abril</option>
-                    <option value="Maio">Maio</option>
-                    <option value="Junho">Junho</option>
-                    <option value="Julho">Julho</option>
-                    <option value="Agosto">Agosto</option>
-                    <option value="Setembro">Setembro</option>
-                    <option value="Outubro">Outubro</option>
-                    <option value="Dezembro">Dezembro</option>
-                </select>
-            </header>
+            <div class="card balance">
+                <p>Saldo disponível</p>
+                <h2>R$ 3.850,00</h2>
+                <span>Saldo do mês</span>
+            </div>
 
-            <section class="cards">
+            <div class="card income">
+                <p>Receitas</p>
+                <h2>R$ 8.500,00</h2>
+                <span>Total recebido</span>
+            </div>
 
-                <div class="card balance">
-                    <p>Saldo disponível</p>
-                    <h2>R$ 3.850,00</h2>
-                    <span>Saldo do casal</span>
-                </div>
+            <div class="card expense">
+                <p>Despesas</p>
+                <h2>R$ 4.650,00</h2>
+                <span>Total gasto</span>
+            </div>
 
-                <div class="card income">
-                    <p>Entradas</p>
-                    <h2>R$ 8.500,00</h2>
-                    <span>Salários e rendimentos</span>
-                </div>
+        </section>
 
-                <div class="card expense">
-                    <p>Despesas</p>
-                    <h2>R$ 4.650,00</h2>
-                    <span>Contas e compras</span>
-                </div>
+        <section class="panel">
+            <h2>Resumo financeiro</h2>
+            <p>Acompanhe como seu dinheiro está sendo utilizado.</p>
 
-            </section>
+            <div class="progress">
+                <div></div>
+            </div>
 
-            <section class="panel">
-                <h2>Resumo financeiro</h2>
-                <p>Visualize como está o dinheiro do casal.</p>
+            <div class="legend">
+                <span>● Despesas</span>
+                <span>● Saldo restante</span>
+            </div>
+        </section>
 
-                <div class="progress">
-                    <div></div>
-                </div>
+        <section class="panel">
+            <h2>Últimas movimentações</h2>
 
-                <div class="legend">
-                    <span>● Despesas</span>
-                    <span>● Saldo restante</span>
-                </div>
-            </section>
+            <div class="movement">
+                <span>🏠 Financiamento</span>
+                <strong>- R$ 950,00</strong>
+            </div>
 
-            <section class="panel">
-                <h2>Últimas movimentações</h2>
+            <div class="movement">
+                <span>🛒 Mercado</span>
+                <strong>- R$ 450,00</strong>
+            </div>
 
-                <div class="movement">
-                    <span>🏠 Financiamento</span>
-                    <strong>- R$ 950,00</strong>
-                </div>
+            <div class="movement">
+                <span>💰 Receita</span>
+                <strong class="positive">+ R$ 4.500,00</strong>
+            </div>
+        </section>
 
-                <div class="movement">
-                    <span>🛒 Mercado</span>
-                    <strong>- R$ 450,00</strong>
-                </div>
+        <section class="panel identity">
+            <h2>O significado do DMIKA</h2>
+            <p>Mais do que controlar dinheiro, uma jornada de transformação financeira.</p>
 
-                <div class="movement">
-                    <span>💰 Salário</span>
-                    <strong class="positive">+ R$ 4.500,00</strong>
-                </div>
-            </section>
+            <div class="meaning">
+                <strong>D — DIRECIONAMENTO</strong>
+                <p>Planejamento claro para sair das dívidas e começar a poupar.</p>
+            </div>
 
-        </main>
-    </div>
+            <div class="meaning">
+                <strong>M — META</strong>
+                <p>Definição de objetivos reais para curto, médio e longo prazo.</p>
+            </div>
 
-    <script src="script.js"></script>
+            <div class="meaning">
+                <strong>I — INVESTIR</strong>
+                <p>Identificar oportunidades do mercado de forma inteligente.</p>
+            </div>
+
+            <div class="meaning">
+                <strong>K — KEY (CHAVE)</strong>
+                <p>A chave para abrir as portas do sucesso financeiro.</p>
+            </div>
+
+            <div class="meaning">
+                <strong>A — AUTONOMIA</strong>
+                <p>Alcançar a independência para viver a vida nos próprios termos.</p>
+            </div>
+        </section>
+
+        <footer>
+            <strong>DMIKA</strong>
+            <p>Seu dinheiro, suas metas, seu futuro.</p>
+        </footer>
+
+    </main>
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
-
