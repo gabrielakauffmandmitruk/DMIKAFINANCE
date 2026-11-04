@@ -109,13 +109,23 @@
                 <input
                     type="number"
                     id="valorOrcamento"
-                    min="0"
+                    min="0.01"
                     step="0.01"
                     placeholder="Ex.: 1000"
                     required
                 >
 
-                <button type="submit">Adicionar ao orçamento</button>
+                <button type="submit" id="botaoOrcamento">
+                    Adicionar ao orçamento
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelarEdicaoOrcamento"
+                    hidden
+                >
+                    Cancelar edição
+                </button>
 
             </form>
 
