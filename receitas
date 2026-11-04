@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMIKA | Receitas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h2>DMIKA<span>.</span></h2>
+            <small>GESTÃO FINANCEIRA INTELIGENTE</small>
+        </div>
+
+        <nav>
+            <a href="index.html">▦ Visão geral</a>
+            <a href="receitas.html" class="active">▤ Receitas</a>
+            <a href="despesas.html">▣ Despesas</a>
+            <a href="planejamento.html">◷ Planejamento</a>
+            <a href="metas.html">◎ Metas</a>
+            <a href="investimentos.html">▥ Investimentos</a>
+            <a href="relatorios.html">▤ Relatórios</a>
+        </nav>
+
+        <div class="couple">
+            <span>D</span>
+            <p>Minha conta</p>
+        </div>
+
+    </aside>
+
+    <main class="content">
+
+        <header>
+            <div>
+                <h1>Receitas</h1>
+                <p>Controle todo o dinheiro que entra.</p>
+            </div>
+        </header>
+
+        <section class="cards">
+
+            <div class="card income">
+                <p>Total de receitas</p>
+                <h2>R$ 8.500,00</h2>
+                <span>Exemplo mensal</span>
+            </div>
+
+            <div class="card balance">
+                <p>Receitas fixas</p>
+                <h2>R$ 8.000,00</h2>
+                <span>Exemplo mensal</span>
+            </div>
+
+            <div class="card expense">
+                <p>Receitas variáveis</p>
+                <h2>R$ 500,00</h2>
+                <span>Exemplo mensal</span>
+            </div>
+
+        </section>
+
+        <section class="panel">
+
+            <h2>Tipos de receitas</h2>
+
+            <div class="movement">
+                <span>💼 Salário</span>
+                <strong class="positive">Receita fixa</strong>
+            </div>
+
+            <div class="movement">
+                <span>💻 Renda extra</span>
+                <strong class="positive">Receita variável</strong>
+            </div>
+
+            <div class="movement">
+                <span>🎁 Outros recebimentos</span>
+                <strong class="positive">Receita variável</strong>
+            </div>
+
+        </section>
+
+        <section class="panel">
+
+            <h2>Histórico de receitas</h2>
+            <p>Exemplos ilustrativos de movimentações.</p>
+
+            <div class="movement">
+                <span>Salário - Pessoa 1</span>
+                <strong class="positive">+ R$ 4.500,00</strong>
+            </div>
+
+            <div class="movement">
+                <span>Salário - Pessoa 2</span>
+                <strong class="positive">+ R$ 4.000,00</strong>
+            </div>
+
+            <div class="movement">
+                <span>Renda extra</span>
+                <strong class="positive">+ R$ 500,00</strong>
+            </div>
+
+        </section>
+
+        <footer>
+            <strong>DMIKA</strong>
+            <p>Seu dinheiro, suas metas, seu futuro.</p>
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>
