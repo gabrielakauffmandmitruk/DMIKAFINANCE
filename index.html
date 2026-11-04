@@ -18,15 +18,15 @@
             <small>GESTÃO FINANCEIRA INTELIGENTE</small>
         </div>
 
-       <nav>
-    <a href="index.html" class="active">▦ Visão geral</a>
-    <a href="receitas.html">▤ Receitas</a>
-    <a href="despesas.html">▣ Despesas</a>
-    <a href="planejamento.html">◷ Planejamento</a>
-    <a href="metas.html">◎ Metas</a>
-    <a href="investimentos.html">▥ Investimentos</a>
-    <a href="relatorios.html">▤ Relatórios</a>
-</nav>
+        <nav>
+            <a href="index.html" class="active">▦ Visão geral</a>
+            <a href="receitas.html">▤ Receitas</a>
+            <a href="despesas.html">▣ Despesas</a>
+            <a href="planejamento.html">◷ Planejamento</a>
+            <a href="metas.html">◎ Metas</a>
+            <a href="investimentos.html">▥ Investimentos</a>
+            <a href="relatorios.html">▤ Relatórios</a>
+        </nav>
 
         <div class="couple">
             <span>D</span>
@@ -43,40 +43,27 @@
                 <p>Seu dinheiro, suas metas, seu futuro.</p>
             </div>
 
-            <select id="mes">
-                <option value="Novembro">Novembro</option>
-                <option value="Janeiro">Janeiro</option>
-                <option value="Fevereiro">Fevereiro</option>
-                <option value="Março">Março</option>
-                <option value="Abril">Abril</option>
-                <option value="Maio">Maio</option>
-                <option value="Junho">Junho</option>
-                <option value="Julho">Julho</option>
-                <option value="Agosto">Agosto</option>
-                <option value="Setembro">Setembro</option>
-                <option value="Outubro">Outubro</option>
-                <option value="Dezembro">Dezembro</option>
-            </select>
+            <input type="month" id="mesDashboard">
         </header>
 
         <section class="cards">
 
             <div class="card balance">
                 <p>Saldo disponível</p>
-                <h2>R$ 3.850,00</h2>
-                <span>Saldo do mês</span>
+                <h2 id="saldoDashboard">R$ 0,00</h2>
+                <span>Receitas menos despesas pagas</span>
             </div>
 
             <div class="card income">
                 <p>Receitas</p>
-                <h2>R$ 8.500,00</h2>
-                <span>Total recebido</span>
+                <h2 id="receitasDashboard">R$ 0,00</h2>
+                <span>Total de receitas cadastradas</span>
             </div>
 
             <div class="card expense">
                 <p>Despesas</p>
-                <h2>R$ 4.650,00</h2>
-                <span>Total gasto</span>
+                <h2 id="despesasDashboard">R$ 0,00</h2>
+                <span>Total de despesas cadastradas</span>
             </div>
 
         </section>
@@ -86,31 +73,43 @@
             <p>Acompanhe como seu dinheiro está sendo utilizado.</p>
 
             <div class="progress">
-                <div></div>
+                <div id="barraDashboard"></div>
             </div>
 
             <div class="legend">
-                <span>● Despesas</span>
+                <span>● Despesas pagas</span>
                 <span>● Saldo restante</span>
+            </div>
+
+            <div id="resumoPercentualDashboard">
+                Nenhuma movimentação cadastrada.
             </div>
         </section>
 
         <section class="panel">
             <h2>Últimas movimentações</h2>
 
-            <div class="movement">
-                <span>🏠 Financiamento</span>
-                <strong>- R$ 950,00</strong>
+            <div id="movimentacoesDashboard">
+                Nenhuma movimentação cadastrada ainda.
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Planejamento do mês</h2>
+
+            <div class="meaning">
+                <strong>Renda prevista</strong>
+                <p id="rendaDashboard">R$ 0,00</p>
             </div>
 
-            <div class="movement">
-                <span>🛒 Mercado</span>
-                <strong>- R$ 450,00</strong>
+            <div class="meaning">
+                <strong>Orçamento planejado</strong>
+                <p id="orcamentoDashboard">R$ 0,00</p>
             </div>
 
-            <div class="movement">
-                <span>💰 Receita</span>
-                <strong class="positive">+ R$ 4.500,00</strong>
+            <div class="meaning">
+                <strong>Saldo previsto</strong>
+                <p id="saldoPrevistoDashboard">R$ 0,00</p>
             </div>
         </section>
 
