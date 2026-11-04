@@ -1,302 +1,106 @@
 
-console.log("DMIKA iniciado com sucesso!");
+// ======================================
+// CONTROLE DE METAS DO DMIKA
+// ======================================
 
-// Identifica o formulário de receitas
-const formReceita = document.getElementById("formReceita");
-const listaReceitas = document.getElementById("listaReceitas");
+const formMeta = document.getElementById("formMeta");
+const listaMetasMeta = document.getElementById("listaMetas");
 
-// Guarda as receitas no navegador
-let receitas = JSON.parse(localStorage.getItem("dmika_receitas") || "[]");
+let metas = JSON.parse(localStorage.getItem("dmika_metas") || "[]");
+let metaEmEdicao = null;
 
-// Identifica se estamos editando uma receita
-let receitaEmEdicao = null;
-
-// Formata os valores em reais
-function formatarMoeda(valor) {
+// Formata valores em reais
+function formatarMoedaMeta(valor) {
     return Number(valor).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
     });
 }
 
-// Salva as receitas no navegador
-function salvarReceitas() {
-    localStorage.setItem("dmika_receitas", JSON.stringify(receitas));
+// Salva as metas no navegador
+function salvarMetas() {
+    localStorage.setItem("dmika_metas", JSON.stringify(metas));
 }
 
-// Atualiza os totais da página
-function atualizarResumo() {
-    const total = receitas.reduce((soma, receita) => soma + Number(receita.valor), 0);
-
-    const fixas = receitas
-        .filter(receita => receita.tipo === "Fixa")
-        .reduce((soma, receita) => soma + Number(receita.valor), 0);
-
-    const variaveis = receitas
-        .filter(receita => receita.tipo === "Variável")
-        .reduce((soma, receita) => soma + Number(receita.valor), 0);
-
-    document.getElementById("totalReceitas").textContent = formatarMoeda(total);
-    document.getElementById("totalFixas").textContent = formatarMoeda(fixas);
-    document.getElementById("totalVariaveis").textContent = formatarMoeda(variaveis);
-}
-
-// Mostra as receitas cadastradas
-function mostrarReceitas() {
-    listaReceitas.innerHTML = "";
-
-    if (receitas.length === 0) {
-        listaReceitas.textContent = "Nenhuma receita cadastrada ainda.";
-        atualizarResumo();
-        return;
-    }
-
-    receitas.forEach(receita => {
-        const item = document.createElement("div");
-        item.className = "movement";
-
-        const informacoes = document.createElement("div");
-
-        const descricao = document.createElement("strong");
-        descricao.textContent = receita.descricao;
-
-        const detalhes = document.createElement("p");
-        detalhes.textContent =
-            `${receita.categoria} | ${receita.tipo} | ${receita.responsavel} | ${receita.data}`;
-
-        const valor = document.createElement("strong");
-        valor.textContent = formatarMoeda(receita.valor);
-        valor.className = "positive";
-
-        informacoes.append(descricao, detalhes, valor);
-
-        const botoes = document.createElement("div");
-
-        const botaoEditar = document.createElement("button");
-        botaoEditar.type = "button";
-        botaoEditar.textContent = "Editar";
-        botaoEditar.addEventListener("click", () => editarReceita(receita.id));
-
-        const botaoExcluir = document.createElement("button");
-        botaoExcluir.type = "button";
-        botaoExcluir.textContent = "Excluir";
-        botaoExcluir.addEventListener("click", () => excluirReceita(receita.id));
-
-        botoes.append(botaoEditar, botaoExcluir);
-        item.append(informacoes, botoes);
-        listaReceitas.appendChild(item);
-    });
-
-    atualizarResumo();
-}
-
-// Cadastra uma nova receita ou salva uma edição
-if (formReceita) {
-    formReceita.addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const descricao = document.getElementById("descricao").value.trim();
-        const valor = Number(document.getElementById("valor").value);
-        const categoria = document.getElementById("categoria").value;
-        const tipo = document.getElementById("tipo").value;
-        const data = document.getElementById("data").value;
-        const responsavel = document.getElementById("responsavel").value;
-
-        if (!descricao || valor <= 0 || !categoria || !tipo || !data || !responsavel) {
-            alert("Preencha todos os campos corretamente.");
-            return;
-        }
-
-        const novaReceita = {
-            id: receitaEmEdicao || Date.now(),
-            descricao,
-            valor,
-            categoria,
-            tipo,
-            data,
-            responsavel
-        };
-
-        if (receitaEmEdicao) {
-            receitas = receitas.map(receita =>
-                receita.id === receitaEmEdicao ? novaReceita : receita
-            );
-        } else {
-            receitas.push(novaReceita);
-        }
-
-        salvarReceitas();
-        mostrarReceitas();
-        formReceita.reset();
-
-        receitaEmEdicao = null;
-        document.querySelector("#formReceita button[type='submit']").textContent =
-            "Adicionar receita";
-
-        document.getElementById("cancelarEdicao").hidden = true;
-
-        alert("Receita salva com sucesso!");
-    });
-}
-
-// Preenche o formulário para editar uma receita
-function editarReceita(id) {
-    const receita = receitas.find(item => item.id === id);
-
-    if (!receita) return;
-
-    receitaEmEdicao = id;
-
-    document.getElementById("descricao").value = receita.descricao;
-    document.getElementById("valor").value = receita.valor;
-    document.getElementById("categoria").value = receita.categoria;
-    document.getElementById("tipo").value = receita.tipo;
-    document.getElementById("data").value = receita.data;
-    document.getElementById("responsavel").value = receita.responsavel;
-
-    document.querySelector("#formReceita button[type='submit']").textContent =
-        "Salvar alterações";
-
-    document.getElementById("cancelarEdicao").hidden = false;
-
-    formReceita.scrollIntoView({ behavior: "smooth" });
-}
-
-// Exclui uma receita
-function excluirReceita(id) {
-    const confirmar = confirm("Tem certeza que deseja excluir esta receita?");
-
-    if (!confirmar) return;
-
-    receitas = receitas.filter(receita => receita.id !== id);
-
-    salvarReceitas();
-    mostrarReceitas();
-
-    if (receitaEmEdicao === id) {
-        cancelarEdicao();
-    }
-}
-
-// Cancela uma edição
-function cancelarEdicao() {
-    receitaEmEdicao = null;
-    formReceita.reset();
-
-    document.querySelector("#formReceita button[type='submit']").textContent =
-        "Adicionar receita";
-
-    document.getElementById("cancelarEdicao").hidden = true;
-}
-
-// Cria o botão para cancelar edição
-if (formReceita) {
-    const botaoCancelar = document.createElement("button");
-    botaoCancelar.type = "button";
-    botaoCancelar.id = "cancelarEdicao";
-    botaoCancelar.textContent = "Cancelar edição";
-    botaoCancelar.hidden = true;
-    botaoCancelar.addEventListener("click", cancelarEdicao);
-
-    formReceita.appendChild(botaoCancelar);
-}
-
-// Mantém o seletor de mês funcionando nas páginas que o possuem
-const seletorMes = document.getElementById("mes");
-
-if (seletorMes) {
-    seletorMes.addEventListener("change", function() {
-        console.log("Mês selecionado:", seletorMes.value);
-    });
-}
-
-// Carrega as receitas ao abrir a página
-if (formReceita && listaReceitas) {
-    mostrarReceitas();
-}
-
-// ======================================
-// CONTROLE DE DESPESAS DO DMIKA
-// ======================================
-
-const formDespesa = document.getElementById("formDespesa");
-const listaDespesas = document.getElementById("listaDespesas");
-
-let despesas = JSON.parse(localStorage.getItem("dmika_despesas") || "[]");
-
-let despesaEmEdicao = null;
-
-// Formatar valores em reais
-function formatarMoedaDespesa(valor) {
-    return Number(valor).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
-}
-
-// Salvar despesas no navegador
-function salvarDespesas() {
-    localStorage.setItem("dmika_despesas", JSON.stringify(despesas));
-}
-
-// Atualizar os cartões de resumo
-function atualizarResumoDespesas() {
-
-    const total = despesas.reduce(
-        (soma, despesa) => soma + Number(despesa.valor), 0
+// Atualiza os três cartões de resumo
+function atualizarResumoMetas() {
+    const total = metas.reduce(
+        (soma, meta) => soma + Number(meta.objetivo), 0
     );
 
-    const fixas = despesas
-        .filter(despesa => despesa.tipo === "Fixa")
-        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+    const guardado = metas.reduce(
+        (soma, meta) => soma + Number(meta.guardado), 0
+    );
 
-    const variaveis = despesas
-        .filter(despesa => despesa.tipo === "Variável")
-        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+    const falta = metas.reduce(
+        (soma, meta) =>
+            soma + Math.max(0, Number(meta.objetivo) - Number(meta.guardado)),
+        0
+    );
 
-    document.getElementById("totalDespesas").textContent =
-        formatarMoedaDespesa(total);
+    document.getElementById("totalMetas").textContent =
+        formatarMoedaMeta(total);
 
-    document.getElementById("totalDespesasFixas").textContent =
-        formatarMoedaDespesa(fixas);
+    document.getElementById("totalGuardadoMetas").textContent =
+        formatarMoedaMeta(guardado);
 
-    document.getElementById("totalDespesasVariaveis").textContent =
-        formatarMoedaDespesa(variaveis);
+    document.getElementById("totalFaltaMetas").textContent =
+        formatarMoedaMeta(falta);
 }
 
-// Mostrar despesas na tela
-function mostrarDespesas() {
+// Mostra todas as metas cadastradas
+function mostrarMetas() {
+    listaMetasMeta.innerHTML = "";
 
-    listaDespesas.innerHTML = "";
+    atualizarResumoMetas();
 
-    if (despesas.length === 0) {
-        listaDespesas.textContent = "Nenhuma despesa cadastrada ainda.";
-        atualizarResumoDespesas();
+    if (metas.length === 0) {
+        listaMetasMeta.textContent = "Nenhuma meta cadastrada ainda.";
         return;
     }
 
-    despesas.forEach(despesa => {
+    metas.forEach(meta => {
+        const objetivo = Number(meta.objetivo);
+        const guardado = Number(meta.guardado);
+
+        const percentual = Math.min(
+            100,
+            (guardado / objetivo) * 100
+        );
 
         const item = document.createElement("div");
-        item.className = "movement";
+        item.className = "meaning";
 
-        const informacoes = document.createElement("div");
+        const titulo = document.createElement("strong");
+        titulo.textContent = meta.nome;
 
-        const descricao = document.createElement("strong");
-        descricao.textContent = despesa.descricao;
+        const valorObjetivo = document.createElement("p");
+        valorObjetivo.textContent =
+            "Objetivo: " + formatarMoedaMeta(objetivo);
 
-        const detalhes = document.createElement("p");
-        detalhes.textContent =
-            `${despesa.categoria} | ${despesa.tipo} | ` +
-            `${despesa.responsavel} | Vencimento: ${despesa.data}`;
+        const valorGuardado = document.createElement("p");
+        valorGuardado.textContent =
+            "Guardado: " + formatarMoedaMeta(guardado);
 
-        const status = document.createElement("p");
-        status.textContent = "Status: " + despesa.status;
+        const prazo = document.createElement("p");
+        prazo.textContent =
+            "Prazo: " + meta.prazo.split("-").reverse().join("/");
 
-        const valor = document.createElement("strong");
-        valor.textContent = formatarMoedaDespesa(despesa.valor);
+        const responsavel = document.createElement("p");
+        responsavel.textContent =
+            "Responsável: " + meta.responsavel;
 
-        informacoes.append(descricao, detalhes, status, valor);
+        const barra = document.createElement("div");
+        barra.className = "progress";
+
+        const progresso = document.createElement("div");
+        progresso.style.width = percentual + "%";
+
+        barra.appendChild(progresso);
+
+        const percentualTexto = document.createElement("span");
+        percentualTexto.textContent =
+            percentual.toFixed(1).replace(".", ",") + "% concluído";
 
         const botoes = document.createElement("div");
 
@@ -305,7 +109,7 @@ function mostrarDespesas() {
         botaoEditar.textContent = "Editar";
 
         botaoEditar.addEventListener("click", function() {
-            editarDespesa(despesa.id);
+            editarMeta(meta.id);
         });
 
         const botaoExcluir = document.createElement("button");
@@ -313,145 +117,145 @@ function mostrarDespesas() {
         botaoExcluir.textContent = "Excluir";
 
         botaoExcluir.addEventListener("click", function() {
-            excluirDespesa(despesa.id);
+            excluirMeta(meta.id);
         });
 
         botoes.append(botaoEditar, botaoExcluir);
-        item.append(informacoes, botoes);
 
-        listaDespesas.appendChild(item);
+        item.append(
+            titulo,
+            valorObjetivo,
+            valorGuardado,
+            prazo,
+            responsavel,
+            barra,
+            percentualTexto,
+            botoes
+        );
+
+        listaMetasMeta.appendChild(item);
     });
-
-    atualizarResumoDespesas();
 }
 
-// Cadastrar ou atualizar despesa
-if (formDespesa) {
+// Cadastrar ou atualizar uma meta
+if (formMeta && listaMetasMeta) {
 
-    formDespesa.addEventListener("submit", function(event) {
-
+    formMeta.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const descricao = document.getElementById("descricaoDespesa").value.trim();
-        const valor = Number(document.getElementById("valorDespesa").value);
-        const categoria = document.getElementById("categoriaDespesa").value;
-        const tipo = document.getElementById("tipoDespesa").value;
-        const data = document.getElementById("vencimentoDespesa").value;
-        const status = document.getElementById("statusDespesa").value;
-        const responsavel = document.getElementById("responsavelDespesa").value;
+        const nome = document.getElementById("nomeMeta").value.trim();
+        const objetivo = Number(
+            document.getElementById("valorObjetivo").value
+        );
+        const guardado = Number(
+            document.getElementById("valorGuardado").value
+        );
+        const prazo = document.getElementById("prazoMeta").value;
+        const responsavel =
+            document.getElementById("responsavelMeta").value;
 
-        if (!descricao || valor <= 0 || !categoria || !tipo || !data || !status || !responsavel) {
+        if (
+            !nome ||
+            objetivo <= 0 ||
+            guardado < 0 ||
+            !prazo ||
+            !responsavel
+        ) {
             alert("Preencha todos os campos corretamente.");
             return;
         }
 
-        const novaDespesa = {
-            id: despesaEmEdicao || Date.now(),
-            descricao,
-            valor,
-            categoria,
-            tipo,
-            data,
-            status,
+        const novaMeta = {
+            id: metaEmEdicao || Date.now(),
+            nome,
+            objetivo,
+            guardado,
+            prazo,
             responsavel
         };
 
-        if (despesaEmEdicao) {
-
-            despesas = despesas.map(despesa =>
-                despesa.id === despesaEmEdicao ? novaDespesa : despesa
+        if (metaEmEdicao) {
+            metas = metas.map(meta =>
+                meta.id === metaEmEdicao ? novaMeta : meta
             );
-
         } else {
-
-            despesas.push(novaDespesa);
-
+            metas.push(novaMeta);
         }
 
-        salvarDespesas();
-        mostrarDespesas();
-        formDespesa.reset();
+        salvarMetas();
+        mostrarMetas();
 
-        despesaEmEdicao = null;
+        formMeta.reset();
+        metaEmEdicao = null;
 
-        document.getElementById("botaoDespesa").textContent =
-            "Adicionar despesa";
+        document.getElementById("botaoMeta").textContent =
+            "Adicionar meta";
 
-        document.getElementById("cancelarEdicaoDespesa").hidden = true;
+        document.getElementById("cancelarEdicaoMeta").hidden = true;
 
-        alert("Despesa salva com sucesso!");
+        alert("Meta salva com sucesso!");
     });
 
-    // Botão para cancelar edição
-    const botaoCancelarDespesa = document.createElement("button");
+    // Botão para cancelar uma edição
+    const botaoCancelarMeta = document.createElement("button");
+    botaoCancelarMeta.type = "button";
+    botaoCancelarMeta.id = "cancelarEdicaoMeta";
+    botaoCancelarMeta.textContent = "Cancelar edição";
+    botaoCancelarMeta.hidden = true;
 
-    botaoCancelarDespesa.type = "button";
-    botaoCancelarDespesa.id = "cancelarEdicaoDespesa";
-    botaoCancelarDespesa.textContent = "Cancelar edição";
-    botaoCancelarDespesa.hidden = true;
+    botaoCancelarMeta.addEventListener("click", cancelarEdicaoMeta);
 
-    botaoCancelarDespesa.addEventListener("click", cancelarEdicaoDespesa);
+    formMeta.appendChild(botaoCancelarMeta);
 
-    formDespesa.appendChild(botaoCancelarDespesa);
+    mostrarMetas();
 }
 
-// Editar despesa
-function editarDespesa(id) {
+// Carrega uma meta no formulário para edição
+function editarMeta(id) {
+    const meta = metas.find(item => item.id === id);
 
-    const despesa = despesas.find(item => item.id === id);
+    if (!meta) return;
 
-    if (!despesa) return;
+    metaEmEdicao = id;
 
-    despesaEmEdicao = id;
+    document.getElementById("nomeMeta").value = meta.nome;
+    document.getElementById("valorObjetivo").value = meta.objetivo;
+    document.getElementById("valorGuardado").value = meta.guardado;
+    document.getElementById("prazoMeta").value = meta.prazo;
+    document.getElementById("responsavelMeta").value = meta.responsavel;
 
-    document.getElementById("descricaoDespesa").value = despesa.descricao;
-    document.getElementById("valorDespesa").value = despesa.valor;
-    document.getElementById("categoriaDespesa").value = despesa.categoria;
-    document.getElementById("tipoDespesa").value = despesa.tipo;
-    document.getElementById("vencimentoDespesa").value = despesa.data;
-    document.getElementById("statusDespesa").value = despesa.status;
-    document.getElementById("responsavelDespesa").value = despesa.responsavel;
-
-    document.getElementById("botaoDespesa").textContent =
+    document.getElementById("botaoMeta").textContent =
         "Salvar alterações";
 
-    document.getElementById("cancelarEdicaoDespesa").hidden = false;
+    document.getElementById("cancelarEdicaoMeta").hidden = false;
 
-    formDespesa.scrollIntoView({ behavior: "smooth" });
+    formMeta.scrollIntoView({ behavior: "smooth" });
 }
 
-// Excluir despesa
-function excluirDespesa(id) {
-
-    const confirmar = confirm("Deseja realmente excluir esta despesa?");
+// Exclui uma meta
+function excluirMeta(id) {
+    const confirmar = confirm("Deseja realmente excluir esta meta?");
 
     if (!confirmar) return;
 
-    despesas = despesas.filter(despesa => despesa.id !== id);
+    metas = metas.filter(meta => meta.id !== id);
 
-    salvarDespesas();
-    mostrarDespesas();
+    salvarMetas();
+    mostrarMetas();
 
-    if (despesaEmEdicao === id) {
-        cancelarEdicaoDespesa();
+    if (metaEmEdicao === id) {
+        cancelarEdicaoMeta();
     }
 }
 
-// Cancelar edição
-function cancelarEdicaoDespesa() {
+// Cancela a edição
+function cancelarEdicaoMeta() {
+    metaEmEdicao = null;
 
-    despesaEmEdicao = null;
+    formMeta.reset();
 
-    formDespesa.reset();
+    document.getElementById("botaoMeta").textContent =
+        "Adicionar meta";
 
-    document.getElementById("botaoDespesa").textContent =
-        "Adicionar despesa";
-
-    document.getElementById("cancelarEdicaoDespesa").hidden = true;
+    document.getElementById("cancelarEdicaoMeta").hidden = true;
 }
-
-// Carregar despesas quando abrir a página
-if (formDespesa && listaDespesas) {
-    mostrarDespesas();
-}
-
