@@ -41,10 +41,10 @@
                 <p>Entenda seus números e acompanhe sua evolução.</p>
             </div>
 
-            <select>
-                <option>2026</option>
-                <option>2027</option>
-                <option>2028</option>
+            <select id="anoRelatorio">
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
             </select>
         </header>
 
@@ -52,73 +52,69 @@
 
             <div class="card income">
                 <p>Total de receitas</p>
-                <h2>R$ 8.000,00</h2>
-                <span>Exemplo de relatório</span>
+                <h2 id="totalReceitasRelatorio">R$ 0,00</h2>
+                <span>Ano selecionado</span>
             </div>
 
             <div class="card expense">
                 <p>Total de despesas</p>
-                <h2>R$ 5.500,00</h2>
-                <span>Exemplo de relatório</span>
+                <h2 id="totalDespesasRelatorio">R$ 0,00</h2>
+                <span>Ano selecionado</span>
             </div>
 
             <div class="card balance">
                 <p>Saldo final</p>
-                <h2>R$ 2.500,00</h2>
+                <h2 id="saldoRelatorio">R$ 0,00</h2>
                 <span>Receitas menos despesas</span>
             </div>
 
         </section>
 
         <section class="panel">
-            <h2>Resumo financeiro</h2>
-            <p>Comparação entre receitas e despesas.</p>
+            <h2>Resumo financeiro mensal</h2>
+            <p>Comparação entre receitas, despesas e saldo de cada mês.</p>
 
-            <div class="movement">
-                <span>Janeiro</span>
-                <strong>Saldo: R$ 2.500,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Fevereiro</span>
-                <strong>Saldo: R$ 1.800,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Março</span>
-                <strong>Saldo: R$ 2.100,00</strong>
+            <div id="resumoMensalRelatorio">
+                Carregando informações...
             </div>
         </section>
 
         <section class="panel">
             <h2>Despesas por categoria</h2>
+            <p>Veja para onde está indo o dinheiro da família.</p>
 
-            <div class="movement">
-                <span>Moradia</span>
-                <strong>R$ 1.800,00</strong>
+            <div id="categoriasRelatorio">
+                Carregando informações...
             </div>
+        </section>
 
-            <div class="movement">
-                <span>Alimentação</span>
-                <strong>R$ 900,00</strong>
-            </div>
+        <section class="panel">
+            <h2>Investimentos</h2>
+            <p>Acompanhe a evolução do patrimônio investido.</p>
 
-            <div class="movement">
-                <span>Transporte</span>
-                <strong>R$ 500,00</strong>
-            </div>
+            <div class="cards">
+                <div class="card">
+                    <p>Total aplicado</p>
+                    <h2 id="totalAplicadoRelatorio">R$ 0,00</h2>
+                </div>
 
-            <div class="movement">
-                <span>Lazer</span>
-                <strong>R$ 400,00</strong>
+                <div class="card">
+                    <p>Rendimentos</p>
+                    <h2 id="rendimentoRelatorio">R$ 0,00</h2>
+                </div>
+
+                <div class="card">
+                    <p>Patrimônio total</p>
+                    <h2 id="patrimonioRelatorio">R$ 0,00</h2>
+                </div>
             </div>
         </section>
 
         <section class="panel">
             <h2>Exportar relatórios</h2>
             <p>
-                Futuramente, você poderá gerar relatórios em PDF e
-                Excel, com filtros por período, categoria e pessoa.
+                A exportação em PDF e Excel será adicionada depois
+                que os relatórios estiverem funcionando.
             </p>
         </section>
 
@@ -130,5 +126,6 @@
     </main>
 </div>
 
+<script src="script.js"></script>
 </body>
 </html>
