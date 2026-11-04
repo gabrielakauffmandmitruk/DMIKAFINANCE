@@ -7,32 +7,26 @@
     <title>DMIKA | Receitas</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
 
     <aside class="sidebar">
-
         <div class="brand">
-            <h2>DMIKA<span>.</span></h2>
-            <small>GESTÃO FINANCEIRA INTELIGENTE</small>
+            <h2>DMIKA</h2>
+            <p>Gestão Financeira Inteligente</p>
         </div>
 
         <nav>
             <a href="index.html">▦ Visão geral</a>
             <a href="receitas.html" class="active">▤ Receitas</a>
-            <a href="despesas.html">▣ Despesas</a>
-            <a href="planejamento.html">◷ Planejamento</a>
+            <a href="despesas.html">▧ Despesas</a>
+            <a href="planejamento.html">▥ Planejamento</a>
             <a href="metas.html">◎ Metas</a>
-            <a href="investimentos.html">▥ Investimentos</a>
+            <a href="investimentos.html">↗ Investimentos</a>
             <a href="relatorios.html">▤ Relatórios</a>
         </nav>
-
-        <div class="couple">
-            <span>D</span>
-            <p>Minha conta</p>
-        </div>
-
     </aside>
 
     <main class="content">
@@ -44,135 +38,95 @@
             </div>
         </header>
 
-<section class="panel">
-    <h2>Adicionar nova receita</h2>
-    <p>Registre uma nova entrada de dinheiro.</p>
+        <!-- FORMULÁRIO PARA CADASTRAR RECEITAS -->
+        <section class="panel">
+            <h2>Adicionar nova receita</h2>
+            <p>Registre uma nova entrada de dinheiro.</p>
 
-    <form id="formReceita">
+            <form id="formReceita">
 
-        <label for="descricao">Descrição</label>
-        <input
-            type="text"
-            id="descricao"
-            placeholder="Ex.: Salário"
-            required
-        >
+                <label for="descricao">Descrição</label>
+                <input
+                    type="text"
+                    id="descricao"
+                    placeholder="Ex.: Salário"
+                    required
+                >
 
-        <label for="valor">Valor</label>
-        <input
-            type="number"
-            id="valor"
-            placeholder="Ex.: 4500"
-            min="0.01"
-            step="0.01"
-            required
-        >
+                <label for="valor">Valor (R$)</label>
+                <input
+                    type="number"
+                    id="valor"
+                    placeholder="Ex.: 4500"
+                    min="0.01"
+                    step="0.01"
+                    required
+                >
 
-        <label for="categoria">Categoria</label>
-        <select id="categoria" required>
-            <option value="">Selecione</option>
-            <option value="Salário">Salário</option>
-            <option value="Renda extra">Renda extra</option>
-            <option value="Outros">Outros</option>
-        </select>
+                <label for="categoria">Categoria</label>
+                <select id="categoria" required>
+                    <option value="">Selecione</option>
+                    <option value="Salário">Salário</option>
+                    <option value="Renda extra">Renda extra</option>
+                    <option value="Outros">Outros</option>
+                </select>
 
-        <label for="tipo">Tipo de receita</label>
-        <select id="tipo" required>
-            <option value="">Selecione</option>
-            <option value="Fixa">Fixa</option>
-            <option value="Variável">Variável</option>
-        </select>
+                <label for="tipo">Tipo de receita</label>
+                <select id="tipo" required>
+                    <option value="">Selecione</option>
+                    <option value="Fixa">Fixa</option>
+                    <option value="Variável">Variável</option>
+                </select>
 
-        <label for="data">Data de recebimento</label>
-        <input type="date" id="data" required>
+                <label for="data">Data de recebimento</label>
+                <input type="date" id="data" required>
 
-        <label for="responsavel">Responsável</label>
-        <select id="responsavel" required>
-            <option value="">Selecione</option>
-            <option value="Pessoa 1">Pessoa 1</option>
-            <option value="Pessoa 2">Pessoa 2</option>
-            <option value="Casal">Casal</option>
-        </select>
+                <label for="responsavel">Responsável</label>
+                <select id="responsavel" required>
+                    <option value="">Selecione</option>
+                    <option value="Pessoa 1">Pessoa 1</option>
+                    <option value="Pessoa 2">Pessoa 2</option>
+                    <option value="Casal">Casal</option>
+                </select>
 
-        <button type="submit">Adicionar receita</button>
+                <button type="submit">Adicionar receita</button>
 
-    </form>
-</section>
+            </form>
+        </section>
 
+        <!-- RESUMO DAS RECEITAS -->
         <section class="cards">
 
-            <div class="card income">
-                <p>Total de receitas</p>
-                <h2>R$ 8.500,00</h2>
-                <span>Exemplo mensal</span>
+            <div class="card">
+                <h3>Total de receitas</h3>
+                <h2 id="totalReceitas">R$ 0,00</h2>
             </div>
 
-            <div class="card balance">
-                <p>Receitas fixas</p>
-                <h2>R$ 8.000,00</h2>
-                <span>Exemplo mensal</span>
+            <div class="card">
+                <h3>Receitas fixas</h3>
+                <h2 id="totalFixas">R$ 0,00</h2>
             </div>
 
-            <div class="card expense">
-                <p>Receitas variáveis</p>
-                <h2>R$ 500,00</h2>
-                <span>Exemplo mensal</span>
+            <div class="card">
+                <h3>Receitas variáveis</h3>
+                <h2 id="totalVariaveis">R$ 0,00</h2>
             </div>
 
         </section>
 
+        <!-- HISTÓRICO -->
         <section class="panel">
-
-            <h2>Tipos de receitas</h2>
-
-            <div class="movement">
-                <span>💼 Salário</span>
-                <strong class="positive">Receita fixa</strong>
+            <h2>Receitas cadastradas</h2>
+            <div id="listaReceitas">
+                <p>Nenhuma receita cadastrada ainda.</p>
             </div>
-
-            <div class="movement">
-                <span>💻 Renda extra</span>
-                <strong class="positive">Receita variável</strong>
-            </div>
-
-            <div class="movement">
-                <span>🎁 Outros recebimentos</span>
-                <strong class="positive">Receita variável</strong>
-            </div>
-
         </section>
-
-        <section class="panel">
-
-            <h2>Histórico de receitas</h2>
-            <p>Exemplos ilustrativos de movimentações.</p>
-
-            <div class="movement">
-                <span>Salário - Pessoa 1</span>
-                <strong class="positive">+ R$ 4.500,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Salário - Pessoa 2</span>
-                <strong class="positive">+ R$ 4.000,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>Renda extra</span>
-                <strong class="positive">+ R$ 500,00</strong>
-            </div>
-
-        </section>
-
-        <footer>
-            <strong>DMIKA</strong>
-            <p>Seu dinheiro, suas metas, seu futuro.</p>
-        </footer>
 
     </main>
 
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
