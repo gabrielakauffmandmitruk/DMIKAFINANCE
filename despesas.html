@@ -40,129 +40,118 @@
         <header>
             <div>
                 <h1>Despesas</h1>
-                <p>Entenda para onde está indo seu dinheiro.</p>
+                <p>Controle seus gastos e organize suas contas.</p>
             </div>
         </header>
 
+        <!-- CADASTRO DE DESPESAS -->
+        <section class="panel">
+
+            <h2>Adicionar nova despesa</h2>
+            <p>Cadastre uma conta ou um gasto realizado.</p>
+
+            <form id="formDespesa">
+
+                <label for="descricaoDespesa">Descrição</label>
+                <input
+                    type="text"
+                    id="descricaoDespesa"
+                    placeholder="Ex.: Financiamento"
+                    required
+                >
+
+                <label for="valorDespesa">Valor (R$)</label>
+                <input
+                    type="number"
+                    id="valorDespesa"
+                    placeholder="Ex.: 950"
+                    min="0.01"
+                    step="0.01"
+                    required
+                >
+
+                <label for="categoriaDespesa">Categoria</label>
+                <select id="categoriaDespesa" required>
+                    <option value="">Selecione</option>
+                    <option value="Moradia">Moradia</option>
+                    <option value="Alimentação">Alimentação</option>
+                    <option value="Contas da casa">Contas da casa</option>
+                    <option value="Transporte">Transporte</option>
+                    <option value="Lazer">Lazer</option>
+                    <option value="Compras pessoais">Compras pessoais</option>
+                    <option value="Saúde">Saúde</option>
+                    <option value="Educação">Educação</option>
+                    <option value="Outros">Outros</option>
+                </select>
+
+                <label for="tipoDespesa">Tipo de despesa</label>
+                <select id="tipoDespesa" required>
+                    <option value="">Selecione</option>
+                    <option value="Fixa">Fixa</option>
+                    <option value="Variável">Variável</option>
+                    <option value="Parcelada">Parcelada</option>
+                </select>
+
+                <label for="vencimentoDespesa">Data de vencimento</label>
+                <input
+                    type="date"
+                    id="vencimentoDespesa"
+                    required
+                >
+
+                <label for="statusDespesa">Status</label>
+                <select id="statusDespesa" required>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Paga">Paga</option>
+                </select>
+
+                <label for="responsavelDespesa">Responsável</label>
+                <select id="responsavelDespesa" required>
+                    <option value="">Selecione</option>
+                    <option value="Gabriela">Gabriela</option>
+                    <option value="Larissa">Larissa</option>
+                    <option value="Casal">Casal</option>
+                </select>
+
+                <button type="submit" id="botaoDespesa">
+                    Adicionar despesa
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- RESUMO -->
         <section class="cards">
 
             <div class="card expense">
                 <p>Total de despesas</p>
-                <h2>R$ 4.650,00</h2>
-                <span>Exemplo mensal</span>
+                <h2 id="totalDespesas">R$ 0,00</h2>
+                <span>Total cadastrado</span>
             </div>
 
             <div class="card balance">
                 <p>Despesas fixas</p>
-                <h2>R$ 3.200,00</h2>
-                <span>Exemplo mensal</span>
+                <h2 id="totalDespesasFixas">R$ 0,00</h2>
+                <span>Contas fixas</span>
             </div>
 
             <div class="card income">
                 <p>Despesas variáveis</p>
-                <h2>R$ 1.450,00</h2>
-                <span>Exemplo mensal</span>
+                <h2 id="totalDespesasVariaveis">R$ 0,00</h2>
+                <span>Gastos variáveis</span>
             </div>
 
         </section>
 
+        <!-- HISTÓRICO -->
         <section class="panel">
 
-            <h2>Categorias de despesas</h2>
-            <p>Organização dos gastos por categoria.</p>
+            <h2>Despesas cadastradas</h2>
+            <p>Consulte, edite ou exclua seus lançamentos.</p>
 
-            <div class="movement">
-                <span>🏠 Moradia</span>
-                <strong>R$ 1.500,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>🛒 Alimentação</span>
-                <strong>R$ 800,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>💡 Contas da casa</span>
-                <strong>R$ 400,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>🚗 Transporte</span>
-                <strong>R$ 350,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>🎮 Lazer</span>
-                <strong>R$ 600,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>🛍️ Compras pessoais</span>
-                <strong>R$ 1.000,00</strong>
-            </div>
-
-        </section>
-
-        <section class="panel">
-
-            <h2>Tipos de despesas</h2>
-
-            <div class="movement">
-                <span>Despesas fixas</span>
-                <strong>Contas recorrentes</strong>
-            </div>
-
-            <div class="movement">
-                <span>Despesas variáveis</span>
-                <strong>Gastos do cotidiano</strong>
-            </div>
-
-            <div class="movement">
-                <span>Despesas parceladas</span>
-                <strong>Compras divididas</strong>
-            </div>
-
-        </section>
-
-        <section class="panel">
-
-            <h2>Quem realizou a despesa?</h2>
-
-            <div class="movement">
-                <span>👩 Gabriela</span>
-                <strong>Despesas individuais</strong>
-            </div>
-
-            <div class="movement">
-                <span>👩 Larissa</span>
-                <strong>Despesas individuais</strong>
-            </div>
-
-            <div class="movement">
-                <span>❤️ Casal</span>
-                <strong>Despesas compartilhadas</strong>
-            </div>
-
-        </section>
-
-        <section class="panel">
-
-            <h2>Últimas despesas</h2>
-            <p>Exemplos ilustrativos.</p>
-
-            <div class="movement">
-                <span>🏠 Financiamento</span>
-                <strong>- R$ 950,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>🛒 Mercado</span>
-                <strong>- R$ 450,00</strong>
-            </div>
-
-            <div class="movement">
-                <span>💡 Energia elétrica</span>
-                <strong>- R$ 180,00</strong>
+            <div id="listaDespesas">
+                <p>Nenhuma despesa cadastrada ainda.</p>
             </div>
 
         </section>
@@ -175,6 +164,8 @@
     </main>
 
 </div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
