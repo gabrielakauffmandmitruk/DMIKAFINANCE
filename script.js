@@ -541,3 +541,343 @@ if (formMeta && listaMetasMeta) {
 
     mostrarMetas();
 }
+
+ // ======================================
+ // PLANEJAMENTO FINANCEIRO DO DMIKA
+ // ======================================
+
+const mesPlanejamento = document.getElementById("mesPlanejamento");
+const formRendaPlanejada = document.getElementById("formRendaPlanejada");
+const formOrcamento = document.getElementById("formOrcamento");
+const listaOrcamento = document.getElementById("listaOrcamento");
+const comparativoPlanejamento = document.getElementById("comparativoPlanejamento");
+
+let planejamentos = JSON.parse(
+    localStorage.getItem("dmika_planejamentos") || "{}"
+);
+
+let categoriaEmEdicao = null;
+
+// Define o mês atual
+const agoraPlanejamento = new Date();
+const mesAtualPlanejamento =
+    agoraPlanejamento.getFullYear() + "-" +
+    String(agoraPlanejamento.getMonth() + 1).padStart(2, "0");
+
+if (mesPlanejamento) {
+    mesPlanejamento.value = mesAtualPlanejamento;
+}
+
+// Retorna os dados do mês selecionado
+function obterPlanejamento() {
+    const mes = mesPlanejamento.value;
+
+    if (!planejamentos[mes]) {
+        planejamentos[mes] = {
+            renda: 0,
+            categorias: []
+        };
+    }
+
+    return planejamentos[mes];
+}
+
+// Salva tudo no navegador
+function salvarPlanejamentos() {
+    localStorage.setItem(
+        "dmika_planejamentos",
+        JSON.stringify(planejamentos)
+    );
+}
+
+// Atualiza os cartões de resumo
+function atualizarResumoPlanejamento() {
+    const planejamento = obterPlanejamento();
+
+    const renda = Number(planejamento.renda);
+
+    const totalPlanejado = planejamento.categorias.reduce(
+        (soma, item) => soma + Number(item.valor),
+        0
+    );
+
+    const saldo = renda - totalPlanejado;
+
+    document.getElementById("resumoRenda").textContent =
+        formatarMoeda(renda);
+
+    document.getElementById("resumoPlanejado").textContent =
+        formatarMoeda(totalPlanejado);
+
+    document.getElementById("resumoSaldo").textContent =
+        formatarMoeda(saldo);
+}
+
+// Soma as despesas reais por categoria no mês
+function obterDespesasReais(categoria) {
+    const mes = mesPlanejamento.value;
+
+    return despesas
+        .filter(despesa =>
+            despesa.categoria === categoria &&
+            despesa.data &&
+            despesa.data.substring(0, 7) === mes
+        )
+        .reduce((soma, despesa) => soma + Number(despesa.valor), 0);
+}
+
+// Mostra as categorias do orçamento
+function mostrarOrcamento() {
+    const planejamento = obterPlanejamento();
+
+    listaOrcamento.innerHTML = "";
+
+    if (planejamento.categorias.length === 0) {
+        listaOrcamento.textContent =
+            "Nenhuma categoria planejada ainda.";
+
+        comparativoPlanejamento.textContent =
+            "Nenhum orçamento cadastrado ainda.";
+
+        atualizarResumoPlanejamento();
+        return;
+    }
+
+    const tabela = document.createElement("div");
+
+    const comparativo = document.createElement("div");
+
+    planejamento.categorias.forEach(item => {
+        const linha = document.createElement("div");
+        linha.className = "movement";
+
+        const informacoes = document.createElement("div");
+
+        const nome = document.createElement("strong");
+        nome.textContent = item.categoria;
+
+        const valor = document.createElement("p");
+        valor.textContent =
+            "Planejado: " + formatarMoeda(item.valor);
+
+        informacoes.append(nome, valor);
+
+        const botoes = document.createElement("div");
+
+        const botaoEditar = document.createElement("button");
+        botaoEditar.type = "button";
+        botaoEditar.textContent = "Editar";
+
+        botaoEditar.addEventListener("click", function() {
+            editarCategoriaPlanejada(item.id);
+        });
+
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.type = "button";
+        botaoExcluir.textContent = "Excluir";
+
+        botaoExcluir.addEventListener("click", function() {
+            excluirCategoriaPlanejada(item.id);
+        });
+
+        botoes.append(botaoEditar, botaoExcluir);
+        linha.append(informacoes, botoes);
+        tabela.appendChild(linha);
+
+        // Comparativo entre planejado e realizado
+        const realizado = obterDespesasReais(item.categoria);
+        const planejado = Number(item.valor);
+        const diferenca = planejado - realizado;
+
+        const linhaComparativo = document.createElement("div");
+        linhaComparativo.className = "movement";
+
+        const textoComparativo = document.createElement("div");
+
+        const titulo = document.createElement("strong");
+        titulo.textContent = item.categoria;
+
+        const detalhe = document.createElement("p");
+        detalhe.textContent =
+            "Planejado: " + formatarMoeda(planejado) +
+            " | Realizado: " + formatarMoeda(realizado);
+
+        const resultado = document.createElement("p");
+        resultado.textContent = diferenca >= 0
+            ? "Ainda disponível: " + formatarMoeda(diferenca)
+            : "Acima do orçamento: " + formatarMoeda(Math.abs(diferenca));
+
+        textoComparativo.append(titulo, detalhe, resultado);
+        linhaComparativo.appendChild(textoComparativo);
+        comparativo.appendChild(linhaComparativo);
+    });
+
+    listaOrcamento.appendChild(tabela);
+    comparativoPlanejamento.innerHTML = "";
+    comparativoPlanejamento.appendChild(comparativo);
+
+    atualizarResumoPlanejamento();
+}
+
+// Cadastra ou edita a renda prevista
+if (formRendaPlanejada) {
+    formRendaPlanejada.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const renda = Number(
+            document.getElementById("rendaPrevista").value
+        );
+
+        if (renda < 0) {
+            alert("Informe uma renda válida.");
+            return;
+        }
+
+        const planejamento = obterPlanejamento();
+
+        planejamento.renda = renda;
+
+        salvarPlanejamentos();
+        mostrarOrcamento();
+
+        formRendaPlanejada.reset();
+
+        alert("Renda prevista salva com sucesso!");
+    });
+}
+
+// Cadastra uma categoria no orçamento
+if (formOrcamento) {
+    formOrcamento.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const categoria =
+            document.getElementById("categoriaOrcamento").value;
+
+        const valor = Number(
+            document.getElementById("valorOrcamento").value
+        );
+
+        if (!categoria || valor < 0) {
+            alert("Preencha os campos corretamente.");
+            return;
+        }
+
+        const planejamento = obterPlanejamento();
+
+        const categoriaExistente = planejamento.categorias.find(item =>
+            item.categoria === categoria &&
+            item.id !== categoriaEmEdicao
+        );
+
+        if (categoriaExistente) {
+            alert("Essa categoria já existe neste mês. Edite o valor existente.");
+            return;
+        }
+
+        const novaCategoria = {
+            id: categoriaEmEdicao || Date.now(),
+            categoria,
+            valor
+        };
+
+        if (categoriaEmEdicao) {
+            planejamento.categorias = planejamento.categorias.map(item =>
+                item.id === categoriaEmEdicao ? novaCategoria : item
+            );
+        } else {
+            planejamento.categorias.push(novaCategoria);
+        }
+
+        salvarPlanejamentos();
+
+        categoriaEmEdicao = null;
+        formOrcamento.reset();
+
+        formOrcamento.querySelector('button[type="submit"]').textContent =
+            "Adicionar ao orçamento";
+
+        mostrarOrcamento();
+
+        alert("Categoria salva no orçamento!");
+    });
+}
+
+// Edita uma categoria
+function editarCategoriaPlanejada(id) {
+    const planejamento = obterPlanejamento();
+
+    const item = planejamento.categorias.find(item => item.id === id);
+
+    if (!item) return;
+
+    categoriaEmEdicao = id;
+
+    document.getElementById("categoriaOrcamento").value = item.categoria;
+    document.getElementById("valorOrcamento").value = item.valor;
+
+    formOrcamento.querySelector('button[type="submit"]').textContent =
+        "Salvar alterações";
+
+    formOrcamento.scrollIntoView({ behavior: "smooth" });
+}
+
+// Exclui uma categoria
+function excluirCategoriaPlanejada(id) {
+    if (!confirm("Deseja excluir esta categoria do orçamento?")) return;
+
+    const planejamento = obterPlanejamento();
+
+    planejamento.categorias = planejamento.categorias.filter(
+        item => item.id !== id
+    );
+
+    salvarPlanejamentos();
+
+    if (categoriaEmEdicao === id) {
+        categoriaEmEdicao = null;
+        formOrcamento.reset();
+
+        formOrcamento.querySelector('button[type="submit"]').textContent =
+            "Adicionar ao orçamento";
+    }
+
+    mostrarOrcamento();
+}
+
+// Atualiza a página quando o mês muda
+if (mesPlanejamento) {
+    mesPlanejamento.addEventListener("change", function() {
+        categoriaEmEdicao = null;
+
+        if (formOrcamento) {
+            formOrcamento.reset();
+            formOrcamento.querySelector('button[type="submit"]').textContent =
+                "Adicionar ao orçamento";
+        }
+
+        const planejamento = obterPlanejamento();
+
+        document.getElementById("rendaPrevista").value =
+            planejamento.renda || "";
+
+        mostrarOrcamento();
+    });
+}
+
+// Inicializa a página
+if (
+    mesPlanejamento &&
+    formRendaPlanejada &&
+    formOrcamento &&
+    listaOrcamento &&
+    comparativoPlanejamento
+) {
+    const planejamento = obterPlanejamento();
+
+    document.getElementById("rendaPrevista").value =
+        planejamento.renda || "";
+
+    mostrarOrcamento();
+}
+
